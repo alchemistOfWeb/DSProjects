@@ -17,13 +17,19 @@
 // more of a philosofical kind than technical.
 #pragma once
 #include <iostream>
-
+#include <math.h>
 
 namespace numbers 
 {
 	
 
+
+template <typename T>
+concept IntegralValue = std::is_integral_v<T>;
+
 long long int calculate_gcd(long long int first, long long int second) {
+	first = std::abs(first);
+	second = std::abs(second);
 	if (first == 0 || second == 0) return 1;
 	while (first != second) {
 		if (first > second) first -= second;
@@ -31,9 +37,6 @@ long long int calculate_gcd(long long int first, long long int second) {
 	}
 	return first;
 }
-
-template <typename T>
-concept IntegralValue = std::is_integral_v<T>;
 
 template <IntegralValue T>
 class RationalNumber
@@ -178,44 +181,44 @@ public:
 	}
 
 	// Multiplying--------------------------------------:
-	RationalNumber operator*(RationalNumber& other) {
-		return new RationalNumber<T>(
+	RationalNumber<T> operator*(RationalNumber<T>& other) {
+		return RationalNumber<T>(
 			m_numerator * other.m_numerator, 
 			m_denominator * other.m_denominator
 		);
 	}
 
-	friend RationalNumber operator*(RationalNumber& left, int right) {
-		return new RationalNumber<T>(
+	friend RationalNumber<T> operator*(RationalNumber<T>& left, int right) {
+		return RationalNumber<T>(
 			left.m_numerator * right,
 			left.m_denominator
 		);
 	}
 
-	friend RationalNumber operator*(int left, RationalNumber& right) {
-		return new RationalNumber<T>(
+	friend RationalNumber<T> operator*(int left, RationalNumber<T>& right) {
+		return RationalNumber<T>(
 			right.m_numerator * left,
 			right.m_denominator
 		);
 	}
 
 	// Dividing--------------------------------------:
-	RationalNumber operator/(RationalNumber& other) {
-		return new RationalNumber<T>(
+	RationalNumber<T> operator/(RationalNumber<T>& other) {
+		return RationalNumber<T>(
 			m_numerator * other.m_denominator,
 			m_denominator * other.m_numerator
 		);
 	}
 
-	friend RationalNumber operator/(RationalNumber& left, int right) {
-		return new RationalNumber<T>(
+	friend RationalNumber<T> operator/(RationalNumber<T>& left, int right) {
+		return RationalNumber<T>(
 			left.m_numerator,
 			left.m_denominator * right
 		);
 	}
 
-	friend RationalNumber operator/(int left, RationalNumber& right) {
-		return new RationalNumber<T>(
+	friend RationalNumber<T> operator/(int left, RationalNumber<T>& right) {
+		return RationalNumber<T>(
 			right.m_numerator,
 			right.m_denominator * left
 		);
