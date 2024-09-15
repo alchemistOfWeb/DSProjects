@@ -5,7 +5,7 @@
 #include "Tests/Test4.h"
 #include "Tests/Test5.h"
 #include "Tests/Test6.h"
-//#include "Tests/Test7.h"
+#include "Tests/Test7.h"
 //#include "Tests/Test8.h"
 #include <iostream>
 

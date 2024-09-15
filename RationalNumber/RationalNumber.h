@@ -104,10 +104,18 @@ public:
 
 	// Plus--------------------------------------:
 	RationalNumber<T> operator+(RationalNumber<T>& other) {
-		T numerator = m_numerator * other.m_denominator + other.m_numerator * m_denominator;
-		T denominator = m_denominator * other.m_denominator;
+		T outerMultiplyier = calculate_gcd(m_numerator, other.m_numerator);
+		T outerDivisor = calculate_gcd(m_denominator, other.m_denominator);
 
-		return RationalNumber<T>(numerator, denominator);
+		T left_denominator = (other.m_denominator / outerDivisor);
+		T right_denominator = (m_denominator / outerDivisor);
+
+		T left_numerator = (m_numerator / outerMultiplyier) * left_denominator;
+		T right_numerator = (other.m_numerator / outerMultiplyier) * right_denominator;
+		T numerator = left_numerator + right_numerator;
+		T denominator = left_denominator * right_denominator;
+
+		return RationalNumber<T>(outerMultiplyier * numerator, denominator * outerDivisor);
 	}
 
 	friend RationalNumber<T> operator+(T left, RationalNumber<T>& right) {
@@ -190,9 +198,20 @@ public:
 
 	// Multiplying--------------------------------------:
 	RationalNumber<T> operator*(RationalNumber<T>& other) {
+		// from left up to right down
+		T leftRightGCD = calculate_gcd(m_numerator, other.m_denominator);
+		// from right up to left down
+		T rightLeftGCD = calculate_gcd(m_denominator, other.m_numerator);
+
+		T left_numerator = m_numerator / leftRightGCD;
+		T right_numerator = other.m_numerator / rightLeftGCD;
+
+		T left_denominator = m_denominator / rightLeftGCD;
+		T right_denominator = other.m_denominator / leftRightGCD;
+
 		return RationalNumber<T>(
-			m_numerator * other.m_numerator, 
-			m_denominator * other.m_denominator
+			left_numerator * right_numerator,
+			left_denominator * right_denominator
 		);
 	}
 
