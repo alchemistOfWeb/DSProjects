@@ -255,7 +255,7 @@ public:
 	}
 
 	bool operator==(RationalNumber& other) {
-		return (m_numerator * other.m_denominator) = (other.m_numerator * m_denominator);
+		return (m_numerator * other.m_denominator) == (other.m_numerator * m_denominator);
 	}
 
 	bool operator!=(RationalNumber& other) {
