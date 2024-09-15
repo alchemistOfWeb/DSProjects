@@ -132,7 +132,7 @@ public:
 		return *this;
 	}
 
-	RationalNumber<T>& operator++(int)
+	RationalNumber<T> operator++(int)
 	{
 		RationalNumber<T> old_value = *this;
 		m_numerator += m_denominator;
@@ -260,9 +260,9 @@ public:
 	}
 
 	// Type conversion operators--------------------------------------:
-	operator int() {
+	/*operator int() {
 		
-	};
+	};*/
 	operator float() {};
 	operator double() {};
 };

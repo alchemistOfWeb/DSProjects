@@ -1,5 +1,5 @@
 #include "Tests/Test0.h"
-//#include "Tests/Test1.h"
+#include "Tests/Test1.h"
 //#include "Tests/Test2.h"
 //#include "Tests/Test3.h"
 //#include "Tests/Test4.h"

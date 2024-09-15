@@ -26,7 +26,7 @@ struct Test1
 
         rationalNumber1 /= rationalNumber2;
         assertLexicallyEqual(rationalNumber1, "4/3", __LINE__, __FILE__);
-
+        
         assertLexicallyEqual(rationalNumber3++, "0/1", __LINE__, __FILE__);
         assertLexicallyEqual(++rationalNumber3, "2/1", __LINE__, __FILE__);
     }
