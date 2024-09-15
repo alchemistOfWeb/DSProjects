@@ -95,26 +95,24 @@ public:
 	// Plus--------------------------------------:
 	RationalNumber<T> operator+(RationalNumber<T>& other) {
 		T numerator = m_numerator * other.m_denominator + other.m_numerator * m_denominator;
-		T denumerator = m_denominator * other.m_denominator;
+		T denominator = m_denominator * other.m_denominator;
 
-		return RationalNumber<T>(numerator, denumerator);
-	}
-
-	friend RationalNumber<T> operator+(RationalNumber<T>& left, size_t right) {
-		// TODO:
-		size_t numerator = 0;
-		size_t denumerator = 1;
-
-		return new RationalNumber<T>();
+		return RationalNumber<T>(numerator, denominator);
 	}
 
 	friend RationalNumber<T> operator+(T left, RationalNumber<T>& right) {
-		return new RationalNumber<T>();
+		T numerator = left * right.m_denominator + right.m_numerator;
+		return RationalNumber(numerator, right.m_denominator);
 	}
 
-	RationalNumber& operator+()
+	friend RationalNumber<T> operator+(RationalNumber<T>& left, T right) {
+		return right + left;
+	}
+
+
+	RationalNumber<T> operator+()
 	{
-		return new RationalNumber<T>(+m_numerator, +m_denominator);
+		return RationalNumber<T>(+m_numerator, +m_denominator);
 	}
 
 	RationalNumber<T>& operator+=(RationalNumber& other)
@@ -146,22 +144,22 @@ public:
 	RationalNumber<T> operator-(RationalNumber<T>& other)
 	{
 		T numerator = m_numerator * other.m_denominator - other.m_numerator * m_denominator;
-		T denumerator = m_denominator * other.m_denominator;
-		return RationalNumber<T>(numerator, denumerator);
+		T denominator = m_denominator * other.m_denominator;
+		return RationalNumber<T>(numerator, denominator);
 	}
 
-	friend RationalNumber operator-(RationalNumber& left, int right) {
+	friend RationalNumber<T> operator-(RationalNumber<T>& left, int right) {
 		T numerator = left.m_numerator - right * left.m_denominator;
-		return new RationalNumber(numerator, left.m_denominator);
+		return RationalNumber<T>(numerator, left.m_denominator);
 	}
 
-	friend RationalNumber operator-(int left, RationalNumber& right) {
+	friend RationalNumber<T> operator-(int left, RationalNumber<T>& right) {
 		T numerator = left * right.m_denominator - right.m_numerator;
-		return new RationalNumber(numerator, right.m_denominator);
+		return RationalNumber<T>(numerator, right.m_denominator);
 	}
 
-	RationalNumber& operator-() {
-		return new RationalNumber<T>(-m_numerator, m_denominator);
+	RationalNumber<T> operator-() {
+		return RationalNumber<T>(-m_numerator, m_denominator);
 	}
 
 	RationalNumber<T>& operator-=(RationalNumber<T>& other) {
@@ -169,7 +167,7 @@ public:
 		return *this;
 	}
 
-	RationalNumber& operator-=(int& other) {
+	RationalNumber<T>& operator-=(int& other) {
 		return *this - other;
 	}
 
