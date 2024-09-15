@@ -236,15 +236,22 @@ public:
 			m_denominator * other.m_numerator
 		);
 	}
+	
+	RationalNumber<T> operator/(const RationalNumber<T>& other) const {
+		return RationalNumber<T>(
+			m_numerator * other.m_denominator,
+			m_denominator * other.m_numerator
+		);
+	}
 
-	friend RationalNumber<T> operator/(RationalNumber<T>& left, int right) {
+	friend RationalNumber<T> operator/(RationalNumber<T>& left, T right) {
 		return RationalNumber<T>(
 			left.m_numerator,
 			left.m_denominator * right
 		);
 	}
 
-	friend RationalNumber<T> operator/(int left, RationalNumber<T>& right) {
+	friend RationalNumber<T> operator/(T left, RationalNumber<T>& right) {
 		return RationalNumber<T>(
 			right.m_numerator,
 			right.m_denominator * left
@@ -281,6 +288,10 @@ public:
 		return (m_numerator * other.m_denominator) != (other.m_numerator * m_denominator);
 	}
 
+	bool operator!=(const RationalNumber& other) const {
+		return (m_numerator * other.m_denominator) != (other.m_numerator * m_denominator);
+	}
+
 	bool operator>=(RationalNumber& other) {
 		return (m_numerator * other.m_denominator) >= (other.m_numerator * m_denominator);
 	}
@@ -302,8 +313,8 @@ public:
 };
 	
 namespace literals {
-	RationalNumber<unsigned long long> operator "" _r(unsigned long long value) {
-		return RationalNumber<unsigned long long>(value);
+	RationalNumber<unsigned long long> operator"" _r(unsigned long long value) {
+		return RationalNumber<unsigned long long>(value, 1);
 	}
 }
 
