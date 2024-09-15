@@ -17,7 +17,6 @@
 // more of a philosofical kind than technical.
 #pragma once
 #include <iostream>
-#include <math.h>
 
 namespace numbers 
 {
@@ -27,9 +26,10 @@ namespace numbers
 template <typename T>
 concept IntegralValue = std::is_integral_v<T>;
 
-long long int calculate_gcd(long long int first, long long int second) {
-	first = std::abs(first);
-	second = std::abs(second);
+template <IntegralValue T>
+T calculate_gcd(T first, T second) {
+	first = first < 0 ? -(signed)first : first;
+	second = second < 0 ? -(signed)second : second;
 	if (first == 0 || second == 0) return 1;
 	while (first != second) {
 		if (first > second) first -= second;
@@ -52,16 +52,26 @@ private:
 	}
 public:
 	RationalNumber(T numerator = 0, T denominator = 1) {
+		// TODO: simplify or optimize
+		
 		if (numerator == denominator) {
 			numerator = denominator = 1;
-		}
-		else {
+		} else {
 			int gcd = calculate_gcd(numerator, denominator);
 			if (gcd != 1) {
 				numerator /= gcd;
 				denominator /= gcd;
 			}
 		}
+		if (numerator < 0 && denominator < 0) {
+			numerator = -(signed)numerator;
+			denominator = -(signed)denominator;
+		}
+		if (denominator < 0) {
+			numerator = -(signed)numerator;
+			denominator = -(signed)denominator;
+		}
+
 		m_numerator = numerator;
 		m_denominator = denominator;
 	}
