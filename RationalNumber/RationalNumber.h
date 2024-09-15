@@ -261,11 +261,15 @@ public:
 	}
 
 	// Type conversion operators--------------------------------------:
-	/*operator int() {
-		
-	};*/
-	operator float() {};
-	operator double() {};
+	operator int() {
+		return m_numerator / m_denominator;
+	};
+	operator float() {
+		return (float)m_numerator / m_denominator;
+	};
+	operator double() {
+		return (double)m_numerator / m_denominator;
+	};
 };
 	
 namespace literals {
