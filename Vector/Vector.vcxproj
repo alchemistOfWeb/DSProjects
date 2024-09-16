@@ -148,6 +148,7 @@
     <ClInclude Include="Tests\8AccessFunctionsTest.h" />
     <ClInclude Include="Tests\9ReserveAndShrinkToFitTest.h" />
     <ClInclude Include="Tests\Fixtures\CustomAsserts.h" />
+    <ClInclude Include="Vector.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -17,11 +17,11 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Tests\Fixtures\CustomAsserts.cpp">
-      <Filter>Исходные файлы</Filter>
-    </ClCompile>
     <ClCompile Include="main.cpp">
       <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="Tests\Fixtures\CustomAsserts.cpp">
+      <Filter>Tests\Fixtures</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -75,6 +75,9 @@
     </ClInclude>
     <ClInclude Include="Tests\Fixtures\CustomAsserts.h">
       <Filter>Tests\Fixtures</Filter>
+    </ClInclude>
+    <ClInclude Include="Vector.h">
+      <Filter>Исходные файлы</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
