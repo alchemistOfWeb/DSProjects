@@ -61,7 +61,7 @@ public:
     }
 
     T& at(const size_t& index) {
-        
+        // TODO: Add check 
         return m_arr[index];
     }
 
@@ -114,6 +114,21 @@ public:
 
     bool empty() {
         return !m_size;
+    }
+
+    void swap(Vector& other) {
+        // Need deep or not deep copy?
+        T* tmparr = m_arr;
+        size_t tmpsize = m_size;
+        size_t tmpcap = m_capacity;
+
+        m_arr = other.m_arr;
+        m_size = other.m_size;
+        m_capacity = other.m_capacity;
+
+        other.m_arr = tmparr;
+        other.m_size = tmpsize;
+        other.m_capacity = tmpcap;
     }
 
     bool operator==(const Vector& other) const {
