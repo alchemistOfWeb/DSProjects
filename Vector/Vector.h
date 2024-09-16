@@ -41,6 +41,12 @@ public:
         }
     }
 
+    Vector(Vector<T>& other) : m_arr(new T[other.m_capacity]), m_size(other.m_size), m_capacity(other.m_capacity) {
+        for (size_t i = 0; i < m_size; i++) {
+            m_arr[i] = other.m_arr[i];
+        }
+    }
+
     size_t size() {
         return m_size;
     }
@@ -71,6 +77,20 @@ public:
 
     bool empty() {
         return !m_size;
+    }
+
+    bool operator==(const Vector& other) const {
+        for (size_t i = 0; i < m_size; i++) {
+            if (m_arr[i] != other.m_arr[i]) return false;
+        }
+        return true;
+    }
+    
+    bool operator!=(const Vector& other) const {
+        for (size_t i = 0; i < m_size; i++) {
+            if (m_arr[i] == other.m_arr[i]) return true;
+        }
+        return false;
     }
 
     ~Vector() {
