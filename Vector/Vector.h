@@ -22,9 +22,9 @@ private:
 
 public:
     //Vector() : m_arr(new T[3]), m_size(0), m_capacity(3) {}
-    Vector(std::size_t size=0): m_arr(new T[size]), m_size(0), m_capacity(size) {}
+    //Vector(std::size_t size=0): m_arr(new T[size]), m_size(0), m_capacity(size) {}
 
-    Vector(std::size_t size, T filler): m_arr(new T[size]), m_size(size), m_capacity(size) {
+    Vector(std::size_t size=0, T filler=0): m_arr(new T[size]), m_size(size), m_capacity(size) {
         for (size_t i = 0; i < m_size; i++) {
             m_arr[i] = filler;
         }
@@ -42,11 +42,23 @@ public:
     }
 
     size_t size() {
-        return m_capacity;
+        return m_size;
     }
 
     T& operator[](const size_t& index) {
         return m_arr[index];
+    }
+
+    void push_back(T value) {
+        if (m_size == m_capacity) {
+            T* newarr = new T[m_capacity += 3];
+            for (size_t i = 0; i < m_size; i++) {
+                newarr[i] = m_arr[i];
+            }
+            delete[] m_arr;
+            m_arr = newarr;
+        }
+        m_arr[m_size++] = value;
     }
 
     ~Vector() {
