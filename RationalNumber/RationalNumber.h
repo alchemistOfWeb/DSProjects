@@ -326,4 +326,9 @@ namespace numbers
 
 } // namespace numbers
 
+// what would you change/remove/add? Would you use such rational numbers instead
+// of double/float numbers?
+// I would use such class if ...
+ 
+
 
