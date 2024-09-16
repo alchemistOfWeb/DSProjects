@@ -94,6 +94,20 @@ public:
         return m_arr[m_size--];
     }
 
+    void reserve(size_t capacity) {
+        m_capacity = capacity;
+    }
+
+    size_t capacity() {
+        return m_capacity;
+    }
+
+    void shrink_to_fit() {
+        m_capacity = m_size;
+    }
+
+
+
     void clear() {
         m_size = 0;
     }
@@ -141,6 +155,8 @@ public:
             m_arr[i] = el;
             i++;
         }
+
+        return *this;
     }
 
     ~Vector() {
