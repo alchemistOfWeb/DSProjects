@@ -13,7 +13,7 @@
 #include <initializer_list> 
 
 
-template <typename T>
+template <class T>
 class Vector {
 private:
     T* m_arr = nullptr;
@@ -23,12 +23,19 @@ private:
 public:
     //Vector() : m_arr(new T[3]), m_size(0), m_capacity(3) {}
     //Vector(std::size_t size=0): m_arr(new T[size]), m_size(0), m_capacity(size) {}
+    
+    Vector(std::size_t size=0): m_arr(new T[size]), m_size(size), m_capacity(size) {
+        for (size_t i = 0; i < m_size; i++) {
+            m_arr[i] = T();
+        }
+    }
 
-    Vector(std::size_t size=0, T filler=0): m_arr(new T[size]), m_size(size), m_capacity(size) {
+    Vector(std::size_t size, T filler): m_arr(new T[size]), m_size(size), m_capacity(size) {
         for (size_t i = 0; i < m_size; i++) {
             m_arr[i] = filler;
         }
     }
+
 
     Vector(const std::initializer_list<T>& init_list) {
         m_size = m_capacity = init_list.size();
@@ -57,6 +64,10 @@ public:
     }
 
     T& operator[](const size_t& index) {
+        return m_arr[index];
+    }
+
+    const T& operator[](const size_t& index) const {
         return m_arr[index];
     }
 
