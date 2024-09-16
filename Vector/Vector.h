@@ -60,6 +60,24 @@ public:
         return m_arr[index];
     }
 
+    T& at(const size_t& index) {
+        
+        return m_arr[index];
+    }
+
+    T& front() {
+        return m_arr[0];
+    }
+
+    T& back() {
+        return m_arr[m_size - 1];
+    }
+
+    T* data() {
+        return m_arr;
+    }
+
+
     void push_back(T value) {
         if (m_size == m_capacity) {
             T* newarr = new T[m_capacity += 3];
