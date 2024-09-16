@@ -41,10 +41,15 @@ public:
         }
     }
 
-    Vector(Vector<T>& other) : m_arr(new T[other.m_capacity]), m_size(other.m_size), m_capacity(other.m_capacity) {
+    Vector(Vector<T>& other) : m_arr(), m_size(other.m_size), m_capacity(other.m_capacity) {
+        T* newarr = new T[other.m_capacity];
+
         for (size_t i = 0; i < m_size; i++) {
-            m_arr[i] = other.m_arr[i];
+            newarr[i] = other.m_arr[i];
         }
+
+        delete[] m_arr;
+        m_arr = newarr;
     }
 
     size_t size() {
@@ -91,6 +96,33 @@ public:
             if (m_arr[i] == other.m_arr[i]) return true;
         }
         return false;
+    }
+
+    Vector& operator=(const Vector& other) {
+        T* newarr = new T[other.m_capacity];
+        m_size = other.m_size;
+        m_capacity = other.m_capacity;
+        
+        for (size_t i = 0; i < m_size; i++) {
+            newarr[i] = other.m_arr[i];
+        }
+
+        delete[] m_arr;
+        m_arr = newarr;
+        return *this;
+    }
+
+    Vector& operator=(const std::initializer_list<T>& init_list) {
+        m_size = m_capacity = init_list.size();
+        
+        delete[] m_arr;
+        m_arr = new T[m_capacity];
+
+        int i = 0;
+        for (auto& el : init_list) {
+            m_arr[i] = el;
+            i++;
+        }
     }
 
     ~Vector() {
