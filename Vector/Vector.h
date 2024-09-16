@@ -61,6 +61,10 @@ public:
         m_arr[m_size++] = value;
     }
 
+    T pop_back() {
+        return m_arr[m_size--];
+    }
+
     ~Vector() {
         delete[] m_arr;
     }
