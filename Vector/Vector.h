@@ -65,6 +65,14 @@ public:
         return m_arr[m_size--];
     }
 
+    void clear() {
+        m_size = 0;
+    }
+
+    bool empty() {
+        return !m_size;
+    }
+
     ~Vector() {
         delete[] m_arr;
     }
