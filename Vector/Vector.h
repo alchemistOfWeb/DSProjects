@@ -89,10 +89,9 @@ public:
         return m_arr;
     }
 
-
     void push_back(T value) {
         if (m_size == m_capacity) {
-            reallocate(m_capacity += 3);
+            reallocate(increaseCapacity());
         }
         m_arr[m_size++] = value;
     }
@@ -101,10 +100,13 @@ public:
         return m_arr[m_size--];
     }
 
-    //T& emplace_back(T& args...) {
-    //    m_arr[m_size++] = T(args...);
-    //    reutrn m_arr[m_size - 1];
-    //}
+    template <typename... Args>
+    void emplace_back(Args&&... args) {
+        if (m_capacity == m_size) {
+            reallocate(increaseCapacity());
+        }
+        m_arr[m_size++] = T(std::forward<Args>(args)...);
+    }
 
     void reserve(size_t new_cap) {
         if (new_cap <= m_capacity) return;
@@ -204,5 +206,8 @@ private:
         delete[] m_arr;
         m_arr = newarr;
     }
-
+    
+    size_t increaseCapacity() {
+        return m_capacity += 3;
+    }
 };
