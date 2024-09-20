@@ -117,7 +117,7 @@ public:
         if (m_capacity == m_size) {
             reallocate(increaseCapacity());
         }
-        m_arr[m_size++] = T(std::forward<Args>(args)...);
+        new(&m_arr[m_size++]) T(std::forward<Args>(args)...);
     }
 
     void reserve(size_t new_cap) {
@@ -223,7 +223,7 @@ private:
             T* newarr = static_cast<T*>(operator new[](new_capacity * sizeof(T)));
 
             for (size_t i = 0; i < m_size; i++) {
-                new (newarr + i) T(m_arr[i]);
+                new (newarr + i) T(std::move(m_arr[i]));
             }
 
             delete[] m_arr;

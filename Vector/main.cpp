@@ -18,7 +18,7 @@ All your code must be in "Vector.h"
 #include "Tests/12DestructorCallTest.h"
 #include "Tests/13EmplaceBackTest.h"
 #include "Tests/14ClassWithoutDefaultConstructorTest.h"
-//#include "Tests/15ClassWithoutCopyConstructorTest.h"
+#include "Tests/15ClassWithoutCopyConstructorTest.h"
 //#include "Tests/16MoveConstructorAndMoveAssignmentOperatorTest.h"
 
 #include <iostream>
