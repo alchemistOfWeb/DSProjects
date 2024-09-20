@@ -67,9 +67,11 @@ public:
         m_arr = newarr;
     }
 
-    //Vector(Vector<T>&& other) : m_arr(), m_size(other.m_size), m_capacity(other.m_capacity) {
-    //    
-    //}
+    Vector(Vector<T>&& other) : m_arr(other.m_arr), m_size(other.m_size), m_capacity(other.m_capacity) {
+        other.m_arr = nullptr;
+        other.m_size = 0;
+        other.m_capacity = 0;
+    }
 
     size_t size() {
         return m_size;
@@ -169,12 +171,13 @@ public:
     }
 
     Vector& operator=(const Vector& other) {
-        T* newarr = new T[other.m_capacity];
+        //T* newarr = new T[other.m_capacity];
+        T* newarr = static_cast<T*>(operator new[](other.m_capacity * sizeof(T)));
         m_size = other.m_size;
         m_capacity = other.m_capacity;
         
         for (size_t i = 0; i < m_size; i++) {
-            newarr[i] = other.m_arr[i];
+            new (newarr + i) T(std::move(other.m_arr[i]));
         }
 
         delete[] m_arr;
