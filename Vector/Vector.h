@@ -15,21 +15,33 @@
 #include <iostream>
 
 
+
+template <typename T>
+concept Constructable = std::is_default_constructible_v<T>;
+
 template <class T>
 class Vector {
 public:
-    
-    Vector(std::size_t size=0): m_size(size), m_capacity(size) {
-        m_arr = new T[size];
-        for (size_t i = 0; i < m_size; i++) {
-            m_arr[i] = T();
+
+    Vector(std::size_t size=0): m_capacity(size) {
+        if constexpr (std::is_default_constructible_v<T>) {
+            m_arr = new T[size];
+            m_size = size;
+            for (size_t i = 0; i < m_size; i++) {
+                m_arr[i] = T();
+            }
+        }
+        else {
+            m_arr = static_cast<T*>(operator new[](size * sizeof(T)));
+            m_size = 0;
         }
     }
+    
 
     Vector(std::size_t size, T filler): m_size(size), m_capacity(size) {
         m_arr = new T[size];
         for (size_t i = 0; i < m_size; i++) {
-            m_arr[i] = filler;
+            m_arr[i] = T(filler);
         }
     }
 
@@ -109,7 +121,6 @@ public:
     }
 
     void reserve(size_t new_cap) {
-        if (new_cap <= m_capacity) return;
         reallocate(m_capacity = new_cap);
     }
 
@@ -197,14 +208,27 @@ private:
 
     void reallocate(size_t new_capacity) {
         if (new_capacity <= m_size) return;
-        T* newarr = new T[new_capacity];
-        for (size_t i = 0; i < m_size; i++) {
-            newarr[i] = std::move(m_arr[i]);
-            m_arr[i] = T();
-        }
+        if constexpr (std::is_default_constructible_v<T>) {
+            T* newarr = new T[new_capacity];
 
-        delete[] m_arr;
-        m_arr = newarr;
+            for (size_t i = 0; i < m_size; i++) {
+                newarr[i] = std::move(m_arr[i]);
+                m_arr[i] = T();
+            }
+
+            delete[] m_arr;
+            m_arr = newarr;
+        }
+        else {
+            T* newarr = static_cast<T*>(operator new[](new_capacity * sizeof(T)));
+
+            for (size_t i = 0; i < m_size; i++) {
+                new (newarr + i) T(m_arr[i]);
+            }
+
+            delete[] m_arr;
+            m_arr = newarr;
+        }
     }
     
     size_t increaseCapacity() {
