@@ -470,9 +470,23 @@ namespace numbers
 
 } // namespace numbers
 
-// what would you change/remove/add? Would you use such rational numbers instead
-// of double/float numbers?
-// I would use such class if ...
- 
+
+// To avoid overflow problems, 
+// I would think about adding support for integers 
+// that can grow as large as needed.
+// Also I would consider adding the ability to convert from float, double, 
+// and other types to the RationalNumber.
+// 
+// 
+// In some cases, I might consider using an improved RationalNumber class, 
+// such as in financial applications, mathematical software, 
+// and other scenarios where precise calculations are critically important.
+// But in most cases, I would still prefer double or float. 
+// These types are widely supported by hardware, 
+// making arithmetic operations faster and more efficient. 
+// They are also sufficient for many real-world applications,  
+// where absolute precision isn't required but performance is critical.
+// 
+// 
 
 
