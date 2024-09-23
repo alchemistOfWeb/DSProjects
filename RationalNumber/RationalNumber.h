@@ -21,38 +21,15 @@
 
 namespace numbers 
 {
-
 	template <typename T>
 	concept IntegralValue = std::is_integral_v<T>;
 
 	template <IntegralValue T>
-	T calculate_gcd(T first, T second) {
-		first = first < 0 ? -(signed)first : first;
-		second = second < 0 ? -(signed)second : second;
-
-		if (first == 0 || second == 0) return 1;
-
-		while (first != second) {
-			if (first > second) first %= second;
-			else second %= first;
-			if (first == 0) return second;
-			if (second == 0) return first;
-		}
-		return first;
-	}
+	T calculate_gcd(T first, T second);
 
 	template <IntegralValue T>
 	class RationalNumber
 	{
-	private:
-		T m_numerator;
-		T m_denominator;
-
-		void simplify() {
-			int gcd = calculate_gcd(m_numerator, m_denominator);
-			m_numerator /= gcd;
-			m_denominator /= gcd;
-		}
 	public:
 		RationalNumber(T numerator = 0, T denominator = 1);
 
@@ -155,6 +132,12 @@ namespace numbers
 
 		operator double();
 
+	private:
+		T m_numerator;
+		T m_denominator;
+
+		void simplify();
+
 	}; // class RationalNumber
 	
 	namespace literals {
@@ -164,7 +147,30 @@ namespace numbers
 	}
 
 
+	template <IntegralValue T>
+	T calculate_gcd(T first, T second) {
+		first = first < 0 ? -(signed)first : first;
+		second = second < 0 ? -(signed)second : second;
+
+		if (first == 0 || second == 0) return 1;
+
+		while (first != second) {
+			if (first > second) first %= second;
+			else second %= first;
+			if (first == 0) return second;
+			if (second == 0) return first;
+		}
+		return first;
+	}
+
 	// RationalNumber methods implementations:
+
+	template<IntegralValue T>
+	void RationalNumber<T>::simplify() {
+		int gcd = calculate_gcd(m_numerator, m_denominator);
+		m_numerator /= gcd;
+		m_denominator /= gcd;
+	}
 
 	template<IntegralValue T>
 	RationalNumber<T>::RationalNumber(T numerator, T denominator) {
