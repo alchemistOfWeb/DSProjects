@@ -21,8 +21,8 @@
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
-    <ProjectGuid>{4d2f646d-4b83-461f-afc1-e8ad551c6116}</ProjectGuid>
-    <RootNamespace>ForwardList</RootNamespace>
+    <ProjectGuid>{78c60978-22e8-4d20-a938-a70565ce08fc}</ProjectGuid>
+    <RootNamespace>Set</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -76,7 +76,6 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -91,7 +90,6 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -106,7 +104,6 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -121,7 +118,6 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -131,30 +127,24 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="ForwardList.h" />
-    <ClInclude Include="Tests\10ClearTest.h" />
-    <ClInclude Include="Tests\11BasicIteratorTest.h" />
-    <ClInclude Include="Tests\12ConstIteratorTest.h" />
-    <ClInclude Include="Tests\13MemberAccessIteratorTest.h" />
-    <ClInclude Include="Tests\14InitializerListConstructorTest.h" />
-    <ClInclude Include="Tests\15IteratorConstructibleTest.h" />
-    <ClInclude Include="Tests\16ClassWithNoDefaultConstructorTest.h" />
-    <ClInclude Include="Tests\17InsertTest.h" />
-    <ClInclude Include="Tests\18EraseTest.h" />
-    <ClInclude Include="Tests\19StlCompatibilityTest.h" />
-    <ClInclude Include="Tests\1BasicConstructorsTest.h" />
-    <ClInclude Include="Tests\2PushFrontTest.h" />
-    <ClInclude Include="Tests\3PopFrontTest.h" />
-    <ClInclude Include="Tests\4DestructorCallTest.h" />
-    <ClInclude Include="Tests\5CopyConstructorTest.h" />
-    <ClInclude Include="Tests\6AssignmentOperatorTest.h" />
-    <ClInclude Include="Tests\7DestructorWithAssignmentTest.h" />
-    <ClInclude Include="Tests\8EmplaceFrontTest.h" />
-    <ClInclude Include="Tests\9FrontTest.h" />
-    <ClInclude Include="Tests\Fixtures\CustomAsserts.h" />
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="Set.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="main.cpp" />
+    <ClInclude Include="Set.h" />
+    <ClInclude Include="Tests\10UpperAndLowerBoundsTest.h" />
+    <ClInclude Include="Tests\11EraseIteratorTest.h" />
+    <ClInclude Include="Tests\12TimeLimitTest.h" />
+    <ClInclude Include="Tests\1BasicConstructorsTest.h" />
+    <ClInclude Include="Tests\2InsertContainsTest.h" />
+    <ClInclude Include="Tests\3EraseValueTest.h" />
+    <ClInclude Include="Tests\4InitializerListTest.h" />
+    <ClInclude Include="Tests\5CopyConstructorTest.h" />
+    <ClInclude Include="Tests\6AssignmentOperatorTest.h" />
+    <ClInclude Include="Tests\7IteratorTest.h" />
+    <ClInclude Include="Tests\8IteratorStlCompatibilityTest.h" />
+    <ClInclude Include="Tests\9FindTest.h" />
+    <ClInclude Include="Tests\Fixtures\CustomAsserts.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
