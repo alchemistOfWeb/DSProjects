@@ -7,6 +7,7 @@
 #include <initializer_list> 
 #include <iostream>
 
+
 template <class T>
 class ForwardList
 {
@@ -16,7 +17,12 @@ public:
     bool empty();
     T& front();
 private:
-    T* m_arr = nullptr;
+    struct Node {
+        T value;
+        Node* next;
+    };
+
+    Node* head = nullptr;
     std::size_t m_size;
     std::size_t m_capacity;
 };
@@ -24,17 +30,21 @@ private:
 
 template<class T>
 ForwardList<T>::ForwardList<T>(std::size_t size) : m_size(size), m_capacity(size) {
-    m_arr = new T[size];
-    for (std::size_t i = 0; i < m_size; i++) {
-        m_arr[i] = T();
+    Node<T>** current = &head;
+    for (std::size_t i = 0; i < size; ++i) {
+        *current = new Node<T>();
+        current = &((*current)->next); // was memory allocated for next???
     }
+
 }
 
 template<class T>
 ForwardList<T>::ForwardList<T>(std::size_t size, T filler) : m_size(size), m_capacity(size) {
-    m_arr = new T[size];
-    for (std::size_t i = 0; i < m_size; i++) {
-        m_arr[i] = T(filler);
+    Node<T>** current = &head;
+    for (std::size_t i = 0; i < size; ++i) {
+        *current = new Node<T>{};
+        (*current)->value = T(filler);
+        current = &((*current))->next);
     }
 }
 
@@ -45,6 +55,6 @@ bool ForwardList<T>::empty() {
 
 template<class T>
 T& ForwardList<T>::front() {
-    return m_arr[0];
+    return head->value;
 }
 
