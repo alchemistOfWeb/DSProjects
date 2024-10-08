@@ -16,9 +16,6 @@
 
 
 
-template <typename T>
-concept Constructable = std::is_default_constructible_v<T>;
-
 template <class T>
 class Vector {
 public:
