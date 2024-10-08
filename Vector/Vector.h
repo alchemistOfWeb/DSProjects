@@ -1,13 +1,6 @@
 #pragma once
-// Create a custom vector class that would support all the functionality
+// A custom vector class that supports all the functionality
 // given in main.cpp.
-
-// Again: Declare your functions inside your class, but define them outside of it.
-//
-//#include <vector>
-//
-//template <typename T>
-//using Vector = std::vector<T>;
 
 
 #include <stdexcept>
