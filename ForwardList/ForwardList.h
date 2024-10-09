@@ -17,6 +17,7 @@ public:
     bool empty();
     T& front();
     void push_front(T value);
+    void pop_front();
 private:
     struct Node {
         T value;
@@ -65,4 +66,12 @@ void ForwardList<T>::push_front(T value) {
     current->next = this->head;
     this->head = current;
     m_size++;
+}
+
+template<class T>
+void ForwardList<T>::pop_front() {
+    Node* current = head->next;
+    delete (head);
+    head = current;
+    m_size--;
 }
