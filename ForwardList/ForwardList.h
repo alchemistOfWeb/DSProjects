@@ -29,22 +29,22 @@ private:
 
 
 template<class T>
-ForwardList<T>::ForwardList<T>(std::size_t size) : m_size(size), m_capacity(size) {
-    Node<T>** current = &head;
+ForwardList<T>::ForwardList(std::size_t size) : m_size(size), m_capacity(size) {
+    ForwardList::Node** current = &head;
     for (std::size_t i = 0; i < size; ++i) {
-        *current = new Node<T>();
-        current = &((*current)->next); // was memory allocated for next???
+        *current = new Node{};
+        current = &((*current)->next);
     }
 
 }
 
 template<class T>
-ForwardList<T>::ForwardList<T>(std::size_t size, T filler) : m_size(size), m_capacity(size) {
-    Node<T>** current = &head;
+ForwardList<T>::ForwardList(std::size_t size, T filler) : m_size(size), m_capacity(size) {
+    ForwardList::Node** current = &head;
     for (std::size_t i = 0; i < size; ++i) {
-        *current = new Node<T>{};
+        *current = new Node{};
         (*current)->value = T(filler);
-        current = &((*current))->next);
+        current = &((*current)->next);
     }
 }
 
