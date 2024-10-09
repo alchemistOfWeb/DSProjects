@@ -16,6 +16,7 @@ public:
     ForwardList<T>(std::size_t size, T filler);
     bool empty();
     T& front();
+    void push_front(T value);
 private:
     struct Node {
         T value;
@@ -24,13 +25,12 @@ private:
 
     Node* head = nullptr;
     std::size_t m_size;
-    std::size_t m_capacity;
 };
 
 
 template<class T>
-ForwardList<T>::ForwardList(std::size_t size) : m_size(size), m_capacity(size) {
-    ForwardList::Node** current = &head;
+ForwardList<T>::ForwardList(std::size_t size) : m_size(size) {
+    Node** current = &head;
     for (std::size_t i = 0; i < size; ++i) {
         *current = new Node{};
         current = &((*current)->next);
@@ -39,8 +39,8 @@ ForwardList<T>::ForwardList(std::size_t size) : m_size(size), m_capacity(size) {
 }
 
 template<class T>
-ForwardList<T>::ForwardList(std::size_t size, T filler) : m_size(size), m_capacity(size) {
-    ForwardList::Node** current = &head;
+ForwardList<T>::ForwardList(std::size_t size, T filler) : m_size(size) {
+    Node** current = &head;
     for (std::size_t i = 0; i < size; ++i) {
         *current = new Node{};
         (*current)->value = T(filler);
@@ -58,3 +58,11 @@ T& ForwardList<T>::front() {
     return head->value;
 }
 
+template<class T>
+void ForwardList<T>::push_front(T value) {
+    Node* current = new Node{};
+    current->value = value;
+    current->next = this->head;
+    this->head = current;
+    m_size++;
+}

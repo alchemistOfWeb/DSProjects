@@ -4,7 +4,7 @@ The tests are made via header files. When you include the header file the corres
 All your code must be in "ForwardList.h"
 */
 #include "Tests/1BasicConstructorsTest.h"
-//#include "Tests/2PushFrontTest.h"
+#include "Tests/2PushFrontTest.h"
 //#include "Tests/3PopFrontTest.h"
 //#include "Tests/4DestructorCallTest.h"
 //#include "Tests/5CopyConstructorTest.h"
