@@ -19,6 +19,9 @@ public:
     T& front();
     void push_front(const T& value);
     void pop_front();
+    bool operator==(const ForwardList<T>& other) const;
+    bool operator!=(const ForwardList<T>& other) const;
+    ForwardList(const ForwardList<T>& other);
 
     ~ForwardList() noexcept;
 private:
@@ -90,15 +93,6 @@ void ForwardList<T>::pop_front() {
 
 template<class T>
 void ForwardList<T>::clean() {
-    /*if (!node) return;
-    if (node->next) {
-        clean(node->next);
-        delete node;
-    }
-    else {
-        delete node;
-    }*/
-
     Node* current = head;
     while (current) {
         Node* next = current->next;
@@ -106,18 +100,50 @@ void ForwardList<T>::clean() {
         current = next;
     }
     head = nullptr;
+}
 
 
-    //Node** current = &head;
-    //
-    //while (true)
-    //{
-    //    if (*current == nullptr) break;
-    //    ((*current)->value).~();
-    //    Node** tmp = &((*current)->next);
-    //    //head = *tmp;
-    //    current = tmp;
-    //}
+template<class T>
+ForwardList<T>::ForwardList(const ForwardList<T>& other) : m_size(other.m_size), head(nullptr) {
+    if (!other.head) {
+        return;
+    }
+
+    head = new Node{ other.head->value, nullptr };
+    Node* current = head;
+    Node* otherCurrent = other.head->next;
+
+    while (otherCurrent) {
+        current->next = new Node{ otherCurrent->value, nullptr };
+        current = current->next;
+        otherCurrent = otherCurrent->next;
+    }
+}
+
+
+template<class T>
+bool ForwardList<T>::operator==(const ForwardList<T>& other) const {
+    if (m_size != other.m_size) {
+        return false;
+    }
+
+    Node* current = head;
+    Node* otherCurrent = other.head;
+
+    while (current && otherCurrent) {
+        if (current->value != otherCurrent->value) {
+            return false;
+        }
+        current = current->next;
+        otherCurrent = otherCurrent->next;
+    }
+
+    return current == nullptr && otherCurrent == nullptr;
+}
+
+template<class T>
+bool ForwardList<T>::operator!=(const ForwardList<T>& other) const {
+    return !(*this == other);
 }
 
 template<class T>
@@ -125,3 +151,5 @@ ForwardList<T>::~ForwardList() noexcept {
     clean();
     m_size = 0;
 }
+
+
