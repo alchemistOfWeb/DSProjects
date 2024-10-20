@@ -13,19 +13,27 @@ class ForwardList
 {
 public:
     ForwardList<T>(std::size_t size=0);
-    ForwardList<T>(std::size_t size, T filler);
+    ForwardList<T>(std::size_t size, const T& filler);
+    
     bool empty();
     T& front();
-    void push_front(T value);
+    void push_front(const T& value);
     void pop_front();
+
+    ~ForwardList() noexcept;
 private:
     struct Node {
         T value;
         Node* next;
+
+        Node(): value(T()), next(nullptr) {}
+        Node(const T& value, Node* next = nullptr) : value(value), next(next) {}
     };
 
     Node* head = nullptr;
     std::size_t m_size;
+
+    void clean();
 };
 
 
@@ -40,11 +48,11 @@ ForwardList<T>::ForwardList(std::size_t size) : m_size(size) {
 }
 
 template<class T>
-ForwardList<T>::ForwardList(std::size_t size, T filler) : m_size(size) {
+ForwardList<T>::ForwardList(std::size_t size, const T& filler) : m_size(size) {
     Node** current = &head;
     for (std::size_t i = 0; i < size; ++i) {
-        *current = new Node{};
-        (*current)->value = T(filler);
+        *current = new Node{filler, nullptr };
+        //(*current)->value = T(filler);
         current = &((*current)->next);
     }
 }
@@ -60,18 +68,60 @@ T& ForwardList<T>::front() {
 }
 
 template<class T>
-void ForwardList<T>::push_front(T value) {
-    Node* current = new Node{};
-    current->value = value;
-    current->next = this->head;
-    this->head = current;
+void ForwardList<T>::push_front(const T& value) {
+    Node* current = new Node{value, head};
+    /*current->value = value;
+    current->next = this->head;*/
+    head = current;
     m_size++;
 }
 
+
 template<class T>
 void ForwardList<T>::pop_front() {
+    if (head == nullptr) {
+        throw std::out_of_range("List is empty");
+    }
     Node* current = head->next;
-    delete (head);
+    delete head;
     head = current;
     m_size--;
+}
+
+template<class T>
+void ForwardList<T>::clean() {
+    /*if (!node) return;
+    if (node->next) {
+        clean(node->next);
+        delete node;
+    }
+    else {
+        delete node;
+    }*/
+
+    Node* current = head;
+    while (current) {
+        Node* next = current->next;
+        delete current;
+        current = next;
+    }
+    head = nullptr;
+
+
+    //Node** current = &head;
+    //
+    //while (true)
+    //{
+    //    if (*current == nullptr) break;
+    //    ((*current)->value).~();
+    //    Node** tmp = &((*current)->next);
+    //    //head = *tmp;
+    //    current = tmp;
+    //}
+}
+
+template<class T>
+ForwardList<T>::~ForwardList() noexcept {
+    clean();
+    m_size = 0;
 }

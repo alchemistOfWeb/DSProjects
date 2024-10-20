@@ -21,8 +21,8 @@ namespace test
     ~TestClassForDestructor()
     {
       if(destructorCallCounterPtr)
-        ++(*destructorCallCounterPtr);
-    }
+            ++(*destructorCallCounterPtr);
+        }
   };
   
   struct DestructorCallTest
@@ -35,19 +35,19 @@ namespace test
   	  // The code below is written between 2 brackets because after this brackets the 
   	  // object `lst` must be destroyed and hence the destructor of ForwardList must be called.
   	  {
-    		ForwardList<TestClassForDestructor> lst(10, destructorTestClassObj);
+    	ForwardList<TestClassForDestructor> lst(10, destructorTestClassObj);
     
-    		for(std::size_t i = 0; i < 20; ++i)
-    		  lst.push_front(destructorTestClassObj);
+    	for(std::size_t i = 0; i < 20; ++i)
+          lst.push_front(destructorTestClassObj);
       }
   	  assertEqual(destructorCallCounter, 30, __LINE__, __FILE__);
       
       destructorCallCounter = 0;
   	  {
-    		ForwardList<TestClassForDestructor> lst(10, destructorTestClassObj);
+    	ForwardList<TestClassForDestructor> lst(10, destructorTestClassObj);
     
-    		for(std::size_t i = 0; i < 5; ++i)
-    		  lst.pop_front();
+    	for(std::size_t i = 0; i < 5; ++i)
+    	  lst.pop_front();
         
   	    assertEqual(destructorCallCounter, 5, __LINE__, __FILE__);
       }
