@@ -23,6 +23,9 @@ public:
     bool operator!=(const ForwardList<T>& other) const;
     ForwardList(const ForwardList<T>& other);
     ForwardList<T>& operator=(const ForwardList<T>& other);
+    
+    template<class... Args>
+    void emplace_front(Args&&... args);
 
     ~ForwardList() noexcept;
 private:
@@ -173,6 +176,16 @@ ForwardList<T>& ForwardList<T>::operator=(const ForwardList<T>& other) {
     }
 
     return *this;
+}
+
+template <class T>
+template <class... Args>
+void ForwardList<T>::emplace_front(Args&&... args) {
+    Node* current = new Node{};
+    current->value = T(std::forward<Args>(args)...);
+    current->next = head;
+    head = current;
+    m_size++;
 }
 
 template<class T>
