@@ -14,11 +14,15 @@ class ForwardList
 public:
     ForwardList<T>(std::size_t size=0);
     ForwardList<T>(std::size_t size, const T& filler);
+    ForwardList(const std::initializer_list<T>& init_list);
+    //template <typename InputIt>
+    //ForwardList(InputIt first, InputIt last);
     
     bool empty();
     T& front();
     const T& front() const;
     void push_front(const T& value);
+    void push_back(const T& value);
     void pop_front();
     bool operator==(const ForwardList<T>& other) const;
     bool operator!=(const ForwardList<T>& other) const;
@@ -179,6 +183,24 @@ ForwardList<T>::ForwardList(std::size_t size, const T& filler) : m_size(size) {
     }
 }
 
+
+template<class T>
+ForwardList<T>::ForwardList(const std::initializer_list<T>& init_list) {
+    for (const T& value : init_list) {
+        push_back(value);
+    }
+}
+
+
+//
+//template <class T>
+//template <typename InputIt>
+//ForwardList<T>::ForwardList(InputIt first, InputIt last) {
+//    for (; first != last; ++first) {
+//        push_front(*first);
+//    }
+//}
+
 template<class T>
 bool ForwardList<T>::empty() {
     return m_size == 0;
@@ -199,6 +221,23 @@ template<class T>
 void ForwardList<T>::push_front(const T& value) {
     Node* current = new Node{value, head};
     head = current;
+    m_size++;
+}
+
+template <class T>
+void ForwardList<T>::push_back(const T& value) {
+    Node* newNode = new Node{value, nullptr};
+
+    if (empty()) {
+        head = newNode;
+    }
+    else {
+        Node* current = head;
+        while (current->next) {
+            current = current->next;
+        }
+        current->next = newNode;
+    }
     m_size++;
 }
 
