@@ -17,6 +17,7 @@ public:
     
     bool empty();
     T& front();
+    const T& front() const;
     void push_front(const T& value);
     void pop_front();
     bool operator==(const ForwardList<T>& other) const;
@@ -58,8 +59,7 @@ template<class T>
 ForwardList<T>::ForwardList(std::size_t size, const T& filler) : m_size(size) {
     Node** current = &head;
     for (std::size_t i = 0; i < size; ++i) {
-        *current = new Node{filler, nullptr };
-        //(*current)->value = T(filler);
+        *current = new Node{filler, nullptr};
         current = &((*current)->next);
     }
 }
@@ -75,10 +75,14 @@ T& ForwardList<T>::front() {
 }
 
 template<class T>
+const T& ForwardList<T>::front() const {
+    return head->value; 
+}
+
+
+template<class T>
 void ForwardList<T>::push_front(const T& value) {
     Node* current = new Node{value, head};
-    /*current->value = value;
-    current->next = this->head;*/
     head = current;
     m_size++;
 }
