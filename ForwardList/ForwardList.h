@@ -27,6 +27,7 @@ public:
     
     template<class... Args>
     void emplace_front(Args&&... args);
+    void clear();
 
     ~ForwardList() noexcept;
 private:
@@ -99,6 +100,13 @@ void ForwardList<T>::pop_front() {
     m_size--;
 }
 
+
+template<class T>
+void ForwardList<T>::clear() {
+    clean();
+}
+
+
 template<class T>
 void ForwardList<T>::clean() {
     Node* current = head;
@@ -108,6 +116,7 @@ void ForwardList<T>::clean() {
         current = next;
     }
     head = nullptr;
+    m_size = 0;
 }
 
 
