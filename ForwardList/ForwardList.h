@@ -22,6 +22,7 @@ public:
     bool operator==(const ForwardList<T>& other) const;
     bool operator!=(const ForwardList<T>& other) const;
     ForwardList(const ForwardList<T>& other);
+    ForwardList<T>& operator=(const ForwardList<T>& other);
 
     ~ForwardList() noexcept;
 private:
@@ -144,6 +145,34 @@ bool ForwardList<T>::operator==(const ForwardList<T>& other) const {
 template<class T>
 bool ForwardList<T>::operator!=(const ForwardList<T>& other) const {
     return !(*this == other);
+}
+
+template<class T>
+ForwardList<T>& ForwardList<T>::operator=(const ForwardList<T>& other) {
+    if (this == &other) {
+        return *this;
+    }
+
+    clean();
+
+    m_size = other.m_size;
+
+    if (!other.head) {
+        head = nullptr;
+        return *this;
+    }
+
+    head = new Node{ other.head->value, nullptr };
+    Node* current = head;
+    Node* otherCurrent = other.head->next;
+
+    while (otherCurrent) {
+        current->next = new Node{ otherCurrent->value, nullptr };
+        current = current->next;
+        otherCurrent = otherCurrent->next;
+    }
+
+    return *this;
 }
 
 template<class T>
