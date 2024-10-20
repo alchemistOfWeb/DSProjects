@@ -30,6 +30,14 @@ public:
     void clear();
 
     ~ForwardList() noexcept;
+
+
+    class iterator;
+
+    iterator begin();
+
+    iterator end();
+
 private:
     struct Node {
         T value;
@@ -45,6 +53,49 @@ private:
     void clean();
 };
 
+
+
+template <class T>
+class ForwardList<T>::iterator {
+public:
+    iterator(Node* node) : current(node) {}
+
+    T& operator*() {
+        return current->value;
+    }
+
+    iterator& operator++() {
+        current = current->next;
+        return *this;
+    }
+
+    iterator operator++(int) {
+        iterator tmp = *this;
+        current = current->next;
+        return tmp;
+    }
+
+    bool operator==(const iterator& other) const {
+        return current == other.current;
+    }
+
+    bool operator!=(const iterator& other) const {
+        return current != other.current;
+    }
+
+private:
+    Node* current;
+};
+
+template <class T>
+ForwardList<T>::iterator ForwardList<T>::begin() {
+    return iterator(head);
+}
+
+template <class T>
+ForwardList<T>::iterator ForwardList<T>::end() {
+    return iterator(nullptr);
+}
 
 template<class T>
 ForwardList<T>::ForwardList(std::size_t size) : m_size(size) {
