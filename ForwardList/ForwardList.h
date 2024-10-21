@@ -1,7 +1,4 @@
 #pragma once
-// Create a custom singly linked list class that would support all the functionality
-// given in main.cpp.
-
 
 #include <stdexcept>
 #include <initializer_list> 
@@ -15,8 +12,6 @@ public:
     ForwardList<T>(std::size_t size=0);
     ForwardList<T>(std::size_t size, const T& filler);
     ForwardList(const std::initializer_list<T>& init_list);
-    //template <typename InputIt>
-    //ForwardList(InputIt first, InputIt last);
     
     bool empty();
     T& front();
@@ -186,20 +181,13 @@ ForwardList<T>::ForwardList(std::size_t size, const T& filler) : m_size(size) {
 
 template<class T>
 ForwardList<T>::ForwardList(const std::initializer_list<T>& init_list) {
+    Node** current = &head;
     for (const T& value : init_list) {
-        push_back(value);
+        *current = new Node{ value, nullptr };
+        current = &((*current)->next);
     }
 }
 
-
-//
-//template <class T>
-//template <typename InputIt>
-//ForwardList<T>::ForwardList(InputIt first, InputIt last) {
-//    for (; first != last; ++first) {
-//        push_front(*first);
-//    }
-//}
 
 template<class T>
 bool ForwardList<T>::empty() {
@@ -223,23 +211,23 @@ void ForwardList<T>::push_front(const T& value) {
     head = current;
     m_size++;
 }
-
-template <class T>
-void ForwardList<T>::push_back(const T& value) {
-    Node* newNode = new Node{value, nullptr};
-
-    if (empty()) {
-        head = newNode;
-    }
-    else {
-        Node* current = head;
-        while (current->next) {
-            current = current->next;
-        }
-        current->next = newNode;
-    }
-    m_size++;
-}
+//
+//template <class T>
+//void ForwardList<T>::push_back(const T& value) {
+//    Node* newNode = new Node{value, nullptr};
+//
+//    if (empty()) {
+//        head = newNode;
+//    }
+//    else {
+//        Node* current = head;
+//        while (current->next) {
+//            current = current->next;
+//        }
+//        current->next = newNode;
+//    }
+//    m_size++;
+//}
 
 
 template<class T>
