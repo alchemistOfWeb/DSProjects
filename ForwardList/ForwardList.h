@@ -3,39 +3,60 @@
 #include <stdexcept>
 #include <initializer_list> 
 #include <iostream>
+#include <forward_list>
+
 
 
 template <class T>
 class ForwardList
 {
 public:
+    // CONSTRUCTORS
     ForwardList<T>(std::size_t size=0);
     ForwardList<T>(std::size_t size, const T& filler);
     ForwardList(const std::initializer_list<T>& init_list);
     
+    template <class _Iter, std::enable_if_t<std::_Is_iterator_v<_Iter>, int> = 0>
+    ForwardList(_Iter first, _Iter last);
+
+    ForwardList(const ForwardList<T>& other);
+    
+
+    // METHODS
     bool empty();
     T& front();
     const T& front() const;
     void push_front(const T& value);
     void push_back(const T& value);
     void pop_front();
-    bool operator==(const ForwardList<T>& other) const;
-    bool operator!=(const ForwardList<T>& other) const;
-    ForwardList(const ForwardList<T>& other);
-    ForwardList<T>& operator=(const ForwardList<T>& other);
     
     template<class... Args>
     void emplace_front(Args&&... args);
-    void clear();
 
+    void clear();
+    
+
+    // OVERLOADS
+    bool operator==(const ForwardList<T>& other) const;
+    bool operator!=(const ForwardList<T>& other) const;
+    ForwardList<T>& operator=(const ForwardList<T>& other);
+
+
+    // DESTRUCTOR
     ~ForwardList() noexcept;
 
 
+    // ITERATORS
     class iterator;
+    class const_iterator;
+
+    // ITERATION METHODS
     iterator begin();
     iterator end();
 
-    class const_iterator;
+    const_iterator cbegin() const;
+    const_iterator cend() const;
+
     const_iterator begin() const;
     const_iterator end() const;
 
@@ -55,109 +76,8 @@ private:
 };
 
 
-// ITERATOR IMPLEMENTATION
-template <class T>
-class ForwardList<T>::iterator {
-    friend class ForwardList<T>::const_iterator;
-public:
-    iterator(Node* node) : current(node) {}
-
-    T& operator*() {
-        return current->value;
-    }
-
-    T* operator->() {
-        return &current->value;
-    }
-
-    iterator& operator++() {
-        current = current->next;
-        return *this;
-    }
-
-    iterator operator++(int) {
-        iterator tmp = *this;
-        current = current->next;
-        return tmp;
-    }
-
-    bool operator==(const iterator& other) const {
-        return current == other.current;
-    }
-
-    bool operator!=(const iterator& other) const {
-        return current != other.current;
-    }
-
-private:
-    Node* current;
-};
-
-template <class T>
-ForwardList<T>::iterator ForwardList<T>::begin() {
-    return iterator(head);
-}
-
-template <class T>
-ForwardList<T>::iterator ForwardList<T>::end() {
-    return iterator(nullptr);
-}
-
-// END ITERATOR IMPLEMENTATION
-
-
-
-// CONST ITERATOR IMPLEMENTATION
-template <class T>
-class ForwardList<T>::const_iterator {
-public:
-    const_iterator(Node* node) : current(node) {}
-    const_iterator(const iterator& it) : current(it.current) {}
-
-    const T& operator*() const {
-        return current->value;
-    }
-
-    const T* operator->() const {
-        return &current->value;
-    }
-
-    const_iterator& operator++() {
-        current = current->next;
-        return *this;
-    }
-
-    const_iterator operator++(int) {
-        const_iterator tmp = *this;
-        current = current->next;
-        return tmp;
-    }
-
-    bool operator==(const const_iterator& other) const {
-        return current == other.current;
-    }
-
-    bool operator!=(const const_iterator& other) const {
-        return current != other.current;
-    }
-
-private:
-    Node* current;
-};
-
-template <class T>
-ForwardList<T>::const_iterator ForwardList<T>::begin() const {
-    return const_iterator(head);
-}
-
-template <class T>
-ForwardList<T>::const_iterator ForwardList<T>::end() const {
-    return const_iterator(nullptr);
-}
-
-// END CONST ITERATOR IMPLEMENTATION
-
-
+////////////////////////////////////////////////////////////////////////////
+// FORWARD LIST CONSTRUCTORS
 
 template<class T>
 ForwardList<T>::ForwardList(std::size_t size) : m_size(size) {
@@ -188,6 +108,43 @@ ForwardList<T>::ForwardList(const std::initializer_list<T>& init_list) {
     }
 }
 
+template <class T>
+template <class _Iter, std::enable_if_t<std::_Is_iterator_v<_Iter>, int>>
+ForwardList<T>::ForwardList(_Iter first, _Iter last) : head(nullptr), m_size(0) {
+    Node** current = &head;
+    while (first != last) {
+        *current = new Node{ *first, nullptr };
+        current = &((*current)->next);
+        ++first;
+        ++m_size;
+    }
+}
+
+
+
+template<class T>
+ForwardList<T>::ForwardList(const ForwardList<T>& other) : m_size(other.m_size), head(nullptr) {
+    if (!other.head) {
+        return;
+    }
+
+    head = new Node{ other.head->value, nullptr };
+    Node* current = head;
+    Node* otherCurrent = other.head->next;
+
+    while (otherCurrent) {
+        current->next = new Node{ otherCurrent->value, nullptr };
+        current = current->next;
+        otherCurrent = otherCurrent->next;
+    }
+}
+
+// END FORWARD LIST CONSTRUCTORS
+////////////////////////////////////////////////////////////////////////////
+
+
+////////////////////////////////////////////////////////////////////////////
+// FORWARD LIST METHODS
 
 template<class T>
 bool ForwardList<T>::empty() {
@@ -261,23 +218,23 @@ void ForwardList<T>::clean() {
 }
 
 
-template<class T>
-ForwardList<T>::ForwardList(const ForwardList<T>& other) : m_size(other.m_size), head(nullptr) {
-    if (!other.head) {
-        return;
-    }
-
-    head = new Node{ other.head->value, nullptr };
-    Node* current = head;
-    Node* otherCurrent = other.head->next;
-
-    while (otherCurrent) {
-        current->next = new Node{ otherCurrent->value, nullptr };
-        current = current->next;
-        otherCurrent = otherCurrent->next;
-    }
+template <class T>
+template <class... Args>
+void ForwardList<T>::emplace_front(Args&&... args) {
+    Node* current = new Node{};
+    current->value = T(std::forward<Args>(args)...);
+    current->next = head;
+    head = current;
+    m_size++;
 }
 
+
+// END FORWARD LIST METHODS
+////////////////////////////////////////////////////////////////////////////
+
+
+////////////////////////////////////////////////////////////////////////////
+// OPERATORS OVERLOADS
 
 template<class T>
 bool ForwardList<T>::operator==(const ForwardList<T>& other) const {
@@ -332,15 +289,10 @@ ForwardList<T>& ForwardList<T>::operator=(const ForwardList<T>& other) {
     return *this;
 }
 
-template <class T>
-template <class... Args>
-void ForwardList<T>::emplace_front(Args&&... args) {
-    Node* current = new Node{};
-    current->value = T(std::forward<Args>(args)...);
-    current->next = head;
-    head = current;
-    m_size++;
-}
+
+// END OPERATORS OVERLOADS
+////////////////////////////////////////////////////////////////////////////
+
 
 template<class T>
 ForwardList<T>::~ForwardList() noexcept {
@@ -349,3 +301,129 @@ ForwardList<T>::~ForwardList() noexcept {
 }
 
 
+
+
+
+////////////////////////////////////////////////////////////////////////////
+// ITERATOR
+
+template <class T>
+class ForwardList<T>::iterator {
+    friend class ForwardList<T>::const_iterator;
+public:
+    iterator(Node* node) : current(node) {}
+
+    T& operator*() {
+        return current->value;
+    }
+
+    T* operator->() {
+        return &current->value;
+    }
+
+    iterator& operator++() {
+        current = current->next;
+        return *this;
+    }
+
+    iterator operator++(int) {
+        iterator tmp = *this;
+        current = current->next;
+        ;
+        return tmp;
+    }
+
+    bool operator==(const iterator& other) const {
+        return current == other.current;
+    }
+
+    bool operator!=(const iterator& other) const {
+        return current != other.current;
+    }
+
+private:
+    Node* current;
+};
+
+// END ITERATOR
+////////////////////////////////////////////////////////////////////////////
+
+
+////////////////////////////////////////////////////////////////////////////
+// CONST ITERATOR
+template <class T>
+class ForwardList<T>::const_iterator {
+public:
+    const_iterator(Node* node) : current(node) {}
+    const_iterator(const iterator& it) : current(it.current) {}
+
+    const T& operator*() const {
+        return current->value;
+    }
+
+    const T* operator->() const {
+        return &current->value;
+    }
+
+    const_iterator& operator++() {
+        current = current->next;
+        return *this;
+    }
+
+    const_iterator operator++(int) {
+        const_iterator tmp = *this;
+        current = current->next;
+        return tmp;
+    }
+
+    bool operator==(const const_iterator& other) const {
+        return current == other.current;
+    }
+
+    bool operator!=(const const_iterator& other) const {
+        return current != other.current;
+    }
+
+private:
+    Node* current;
+};
+
+// END CONST ITERATOR
+////////////////////////////////////////////////////////////////////////////
+
+
+////////////////////////////////////////////////////////////////////////////
+// ITERATION METHODS
+
+template <class T>
+ForwardList<T>::iterator ForwardList<T>::begin() {
+    return iterator(head);
+}
+
+template <class T>
+ForwardList<T>::iterator ForwardList<T>::end() {
+    return iterator(nullptr);
+}
+
+template <class T>
+ForwardList<T>::const_iterator ForwardList<T>::cbegin() const {
+    return const_iterator(head);
+}
+
+template <class T>
+ForwardList<T>::const_iterator ForwardList<T>::cend() const {
+    return const_iterator(nullptr);
+}
+
+template <class T>
+ForwardList<T>::const_iterator ForwardList<T>::begin() const {
+    return const_iterator(head);
+}
+
+template <class T>
+ForwardList<T>::const_iterator ForwardList<T>::end() const {
+    return const_iterator(nullptr);
+}
+
+// END ITERATION METHODS
+////////////////////////////////////////////////////////////////////////////
