@@ -18,7 +18,9 @@ public:
     //template <class _Iter, std::enable_if_t<std::_Is_iterator_v<_Iter>, int> = 0>
     //List(_Iter first, _Iter last);
     List(const List<T>& other) noexcept;
+    List& operator=(const List<T>& other);
 
+    // LONELY DESTRUCTOR
     ~List();
 
     // PUBLIC METHODS
@@ -30,6 +32,10 @@ public:
     void pop_front();
     void pop_back();
     size_t size() const;
+
+    // OPERATORS
+    bool operator==(const List<T>& other) const;
+    bool operator!=(const List<T>& other) const;
 
     // ITERATORS
 
@@ -43,6 +49,7 @@ private:
 
     // PRIVATE METHODS
     void clean();
+    void copyFrom(const List<T>& other);
 };
 
 ////////////////////////////////////////////////////////////////////////////
@@ -56,24 +63,6 @@ struct List<T>::Node {
     Node(const T& val, Node* nxt = nullptr, Node* prv = nullptr)
         : value(val), next(nxt), prev(prv) {}
 };
-
-
-//
-//template <class T>
-//struct List<T>::Node {
-//    std::optional<T> value;
-//    Node* next;
-//    Node* prev;
-//
-//    Node() noexcept : value(std::nullopt), next(nullptr), prev(nullptr) {
-//        if constexpr (std::is_default_constructible_v<T>) {
-//            value.emplace();
-//        }
-//    }
-//
-//    Node(const T& value, Node* next = nullptr) : value(value), next(next) {}
-//
-//};
 
 // END node
 ////////////////////////////////////////////////////////////////////////////
@@ -121,12 +110,27 @@ List<T>::List(const List<T>& other) noexcept
 }
 
 template <typename T>
+List<T>& List<T>::operator=(const List<T>& other) {
+    if (this != &other) {
+        clean();
+        copyFrom(other);
+    }
+    return *this;
+}
+
+template <typename T>
 List<T>::~List() {
     clean();
     delete fake_head;
 }
 
 // END constructors
+////////////////////////////////////////////////////////////////////////////
+
+////////////////////////////////////////////////////////////////////////////
+// LONELY DESTRUCTOR
+
+// END lonely destructor
 ////////////////////////////////////////////////////////////////////////////
 
 ////////////////////////////////////////////////////////////////////////////
@@ -231,6 +235,30 @@ size_t List<T>::size() const {
 ////////////////////////////////////////////////////////////////////////////
 
 ////////////////////////////////////////////////////////////////////////////
+// OPERATORS
+
+template <typename T>
+bool List<T>::operator==(const List<T>& other) const {
+    if (m_size != other.m_size) return false;
+    Node* node1 = head;
+    Node* node2 = other.head;
+    while (node1 && node2) {
+        if (node1->value != node2->value) return false;
+        node1 = node1->next;
+        node2 = node2->next;
+    }
+    return true;
+}
+
+template <typename T>
+bool List<T>::operator!=(const List<T>& other) const {
+    return !(*this == other);
+}
+
+// END operators
+////////////////////////////////////////////////////////////////////////////
+
+////////////////////////////////////////////////////////////////////////////
 // PRIVATE METHODS
 
 template <typename T>
@@ -240,6 +268,12 @@ void List<T>::clean() {
     }
 }
 
+template <typename T>
+void List<T>::copyFrom(const List<T>& other) {
+    for (Node* current = other.head; current; current = current->next) {
+        push_back(current->value);
+    }
+}
 
 // END private methods
 ////////////////////////////////////////////////////////////////////////////
