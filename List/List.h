@@ -26,18 +26,26 @@ public:
     // PUBLIC METHODS
     bool empty() const;
     T& front();
+    const T& front() const;
     T& back();
+    const T& back() const;
     void push_front(const T& value);
     void push_back(const T& value);
     void pop_front();
     void pop_back();
     size_t size() const;
+    void clear();
 
     // OPERATORS
     bool operator==(const List<T>& other) const;
     bool operator!=(const List<T>& other) const;
 
     // ITERATORS
+    class iterator;
+
+    // ITERATION METHODS
+    iterator begin();
+    iterator end();
 
 private:
     struct Node;
@@ -66,6 +74,7 @@ struct List<T>::Node {
 
 // END node
 ////////////////////////////////////////////////////////////////////////////
+
 
 ////////////////////////////////////////////////////////////////////////////
 // CONSTRUCTORS
@@ -118,20 +127,22 @@ List<T>& List<T>::operator=(const List<T>& other) {
     return *this;
 }
 
+
+// END constructors
+////////////////////////////////////////////////////////////////////////////
+
+
+////////////////////////////////////////////////////////////////////////////
+// LONELY DESTRUCTOR
 template <typename T>
 List<T>::~List() {
     clean();
     delete fake_head;
 }
 
-// END constructors
-////////////////////////////////////////////////////////////////////////////
-
-////////////////////////////////////////////////////////////////////////////
-// LONELY DESTRUCTOR
-
 // END lonely destructor
 ////////////////////////////////////////////////////////////////////////////
+
 
 ////////////////////////////////////////////////////////////////////////////
 // PUBLIC METHODS
@@ -150,6 +161,11 @@ T& List<T>::front() {
     return head->value;
 }
 
+template <typename T>
+const T& List<T>::front() const {
+    if (empty()) throw std::out_of_range("List is empty");
+    return head->value;
+}
 
 template <typename T>
 T& List<T>::back() {
@@ -159,6 +175,11 @@ T& List<T>::back() {
     return tail->value;
 }
 
+template <typename T>
+const T& List<T>::back() const {
+    if (empty()) throw std::out_of_range("List is empty");
+    return tail->value;
+}
 
 template <typename T>
 void List<T>::push_front(const T& value) {
@@ -225,14 +246,21 @@ void List<T>::pop_back() {
     --m_size;
 }
 
-
 template <typename T>
 size_t List<T>::size() const {
     return m_size;
 }
 
+template <typename T>
+void List<T>::clear() {
+    clean();
+    head = tail = nullptr;
+    m_size = 0;
+}
+
 // END public methods
 ////////////////////////////////////////////////////////////////////////////
+
 
 ////////////////////////////////////////////////////////////////////////////
 // OPERATORS
@@ -257,6 +285,74 @@ bool List<T>::operator!=(const List<T>& other) const {
 
 // END operators
 ////////////////////////////////////////////////////////////////////////////
+
+
+////////////////////////////////////////////////////////////////////////////
+// BASIC ITERATOR
+template <typename T>
+class List<T>::iterator {
+    Node* current;
+public:
+    iterator(Node* node = nullptr);
+
+    T& operator*();
+    iterator& operator++();
+    iterator operator++(int);
+    iterator& operator--();
+    iterator operator--(int);
+    bool operator==(const iterator& other) const;
+    bool operator!=(const iterator& other) const;
+};
+
+template <typename T>
+List<T>::iterator::iterator(Node* node): current(node) {}
+
+template <typename T>
+T& List<T>::iterator::operator*() { return current->value; }
+
+template <typename T>
+typename List<T>::iterator& List<T>::iterator::operator++() { current = current->next; return *this; }
+
+template <typename T>
+List<T>::iterator List<T>::iterator::operator++(int) { iterator temp = *this; ++(*this); return temp; }
+
+template <typename T>
+typename List<T>::iterator& List<T>::iterator::operator--() { 
+    if (current) {
+        current = current->prev;
+    }
+    return *this; 
+}
+
+template <typename T>
+List<T>::iterator List<T>::iterator::operator--(int) { iterator temp = *this; --(*this); return temp; }
+
+template <typename T>
+bool List<T>::iterator::operator==(const iterator& other) const { return current == other.current; }
+
+template <typename T>
+bool List<T>::iterator::operator!=(const iterator& other) const { return current != other.current; }
+
+// END basic iterator
+////////////////////////////////////////////////////////////////////////////
+
+
+// ////////////////////////////////////////////////////////////////////////////
+// ITERATION METHODS
+
+template <typename T>
+typename List<T>::iterator List<T>::begin() {
+    return iterator(head);
+}
+
+template <typename T>
+typename List<T>::iterator List<T>::end() {
+    return iterator(nullptr);
+}
+
+// END iteration methods
+////////////////////////////////////////////////////////////////////////////
+
 
 ////////////////////////////////////////////////////////////////////////////
 // PRIVATE METHODS
