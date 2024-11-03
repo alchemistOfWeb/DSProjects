@@ -4,7 +4,7 @@
 #include <initializer_list> 
 #include <iostream>
 #include <forward_list>
-
+#include <optional>
 
 
 template <class T>
@@ -27,7 +27,6 @@ public:
     T& front();
     const T& front() const;
     void push_front(const T& value);
-    void push_back(const T& value);
     void pop_front();
     
     template<class... Args>
@@ -53,6 +52,7 @@ public:
     // ITERATION METHODS
     iterator begin();
     iterator end();
+    iterator before_begin();
 
     const_iterator cbegin() const;
     const_iterator cend() const;
@@ -61,19 +61,35 @@ public:
     const_iterator end() const;
 
 private:
-    struct Node {
-        T value;
-        Node* next;
-
-        Node(): value(T()), next(nullptr) {}
-        Node(const T& value, Node* next = nullptr) : value(value), next(next) {}
-    };
+    struct Node;
 
     Node* head = nullptr;
+    Node* fake_head = nullptr;
     std::size_t m_size;
 
     void clean();
+}; // END FORWARDLIST DECLARATION
+
+
+////////////////////////////////////////////////////////////////////////////
+// NODE
+template <class T>
+struct ForwardList<T>::Node {
+    std::optional<T> value;
+    Node* next;
+
+    Node() noexcept : value(std::nullopt), next(nullptr) {
+        if constexpr (std::is_default_constructible_v<T>) {
+            value.emplace();
+        }
+    }
+
+    Node(const T& value, Node* next = nullptr) : value(value), next(next) {}
+
 };
+
+// END NODE
+////////////////////////////////////////////////////////////////////////////
 
 
 ////////////////////////////////////////////////////////////////////////////
@@ -81,7 +97,8 @@ private:
 
 template<class T>
 ForwardList<T>::ForwardList(std::size_t size) : m_size(size) {
-    Node** current = &head;
+    fake_head = new Node();
+    Node** current = &(fake_head->next);
     for (std::size_t i = 0; i < size; ++i) {
         *current = new Node{};
         current = &((*current)->next);
@@ -89,9 +106,12 @@ ForwardList<T>::ForwardList(std::size_t size) : m_size(size) {
 
 }
 
+
 template<class T>
 ForwardList<T>::ForwardList(std::size_t size, const T& filler) : m_size(size) {
-    Node** current = &head;
+    fake_head = new Node();
+    Node** current = &(fake_head->next);
+
     for (std::size_t i = 0; i < size; ++i) {
         *current = new Node{filler, nullptr};
         current = &((*current)->next);
@@ -101,7 +121,9 @@ ForwardList<T>::ForwardList(std::size_t size, const T& filler) : m_size(size) {
 
 template<class T>
 ForwardList<T>::ForwardList(const std::initializer_list<T>& init_list) {
-    Node** current = &head;
+    fake_head = new Node();
+    Node** current = &(fake_head->next);
+
     for (const T& value : init_list) {
         *current = new Node{ value, nullptr };
         current = &((*current)->next);
@@ -111,7 +133,9 @@ ForwardList<T>::ForwardList(const std::initializer_list<T>& init_list) {
 template <class T>
 template <class _Iter, std::enable_if_t<std::_Is_iterator_v<_Iter>, int>>
 ForwardList<T>::ForwardList(_Iter first, _Iter last) : head(nullptr), m_size(0) {
-    Node** current = &head;
+    fake_head = new Node();
+    Node** current = &(fake_head->next);
+
     while (first != last) {
         *current = new Node{ *first, nullptr };
         current = &((*current)->next);
@@ -121,19 +145,21 @@ ForwardList<T>::ForwardList(_Iter first, _Iter last) : head(nullptr), m_size(0) 
 }
 
 
-
 template<class T>
-ForwardList<T>::ForwardList(const ForwardList<T>& other) : m_size(other.m_size), head(nullptr) {
-    if (!other.head) {
+ForwardList<T>::ForwardList(const ForwardList<T>& other) : m_size(other.m_size) {
+
+    if (!other.fake_head) {
         return;
     }
 
-    head = new Node{ other.head->value, nullptr };
+    fake_head = new Node();
+    head = new Node{ other.head->value.value(), nullptr};
+    fake_head->next = head;
     Node* current = head;
     Node* otherCurrent = other.head->next;
 
     while (otherCurrent) {
-        current->next = new Node{ otherCurrent->value, nullptr };
+        current->next = new Node{ otherCurrent->value.value(), nullptr};
         current = current->next;
         otherCurrent = otherCurrent->next;
     }
@@ -153,12 +179,12 @@ bool ForwardList<T>::empty() {
 
 template<class T>
 T& ForwardList<T>::front() {
-    return head->value;
+    return head->value.value();
 }
 
 template<class T>
 const T& ForwardList<T>::front() const {
-    return head->value; 
+    return head->value.value();
 }
 
 
@@ -222,7 +248,7 @@ template <class T>
 template <class... Args>
 void ForwardList<T>::emplace_front(Args&&... args) {
     Node* current = new Node{};
-    current->value = T(std::forward<Args>(args)...);
+    current->value.value() = T(std::forward<Args>(args)...);
     current->next = head;
     head = current;
     m_size++;
@@ -234,7 +260,7 @@ void ForwardList<T>::emplace_front(Args&&... args) {
 
 
 ////////////////////////////////////////////////////////////////////////////
-// OPERATORS OVERLOADS
+// OPERATOR OVERLOADS
 
 template<class T>
 bool ForwardList<T>::operator==(const ForwardList<T>& other) const {
@@ -246,7 +272,7 @@ bool ForwardList<T>::operator==(const ForwardList<T>& other) const {
     Node* otherCurrent = other.head;
 
     while (current && otherCurrent) {
-        if (current->value != otherCurrent->value) {
+        if (current->value.value() != otherCurrent->value.value()) {
             return false;
         }
         current = current->next;
@@ -276,12 +302,13 @@ ForwardList<T>& ForwardList<T>::operator=(const ForwardList<T>& other) {
         return *this;
     }
 
-    head = new Node{ other.head->value, nullptr };
+    head = new Node{ other.head->value.value(), nullptr };
+    fake_head->next = head;
     Node* current = head;
     Node* otherCurrent = other.head->next;
 
     while (otherCurrent) {
-        current->next = new Node{ otherCurrent->value, nullptr };
+        current->next = new Node{ otherCurrent->value.value(), nullptr };
         current = current->next;
         otherCurrent = otherCurrent->next;
     }
@@ -290,7 +317,7 @@ ForwardList<T>& ForwardList<T>::operator=(const ForwardList<T>& other) {
 }
 
 
-// END OPERATORS OVERLOADS
+// END OPERATOR OVERLOADS
 ////////////////////////////////////////////////////////////////////////////
 
 
@@ -314,22 +341,22 @@ public:
     iterator(Node* node) : current(node) {}
 
     T& operator*() {
-        return current->value;
+        return current->value.value();
     }
 
     T* operator->() {
-        return &current->value;
+        return &(current->value.value());
     }
 
     iterator& operator++() {
         current = current->next;
+        std::cout << "current: " << current << std::endl;
         return *this;
     }
 
     iterator operator++(int) {
         iterator tmp = *this;
         current = current->next;
-        ;
         return tmp;
     }
 
@@ -358,11 +385,11 @@ public:
     const_iterator(const iterator& it) : current(it.current) {}
 
     const T& operator*() const {
-        return current->value;
+        return current->value.value();
     }
 
     const T* operator->() const {
-        return &current->value;
+        return &(current->value.value());
     }
 
     const_iterator& operator++() {
@@ -423,6 +450,11 @@ ForwardList<T>::const_iterator ForwardList<T>::begin() const {
 template <class T>
 ForwardList<T>::const_iterator ForwardList<T>::end() const {
     return const_iterator(nullptr);
+}
+
+template <class T>
+ForwardList<T>::iterator ForwardList<T>::before_begin() {
+    return iterator(fake_head->next);
 }
 
 // END ITERATION METHODS
