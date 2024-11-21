@@ -1,13 +1,6 @@
 #pragma once
-// Create a custom vector class that would support all the functionality
+// A custom vector class that supports all the functionality
 // given in main.cpp.
-
-// Again: Declare your functions inside your class, but define them outside of it.
-//
-//#include <vector>
-//
-//template <typename T>
-//using Vector = std::vector<T>;
 
 
 #include <stdexcept>
@@ -15,9 +8,6 @@
 #include <iostream>
 
 
-
-template <typename T>
-concept Constructable = std::is_default_constructible_v<T>;
 
 template <class T>
 class Vector {
@@ -30,7 +20,7 @@ public:
 
     Vector(Vector<T>& other);
 
-    Vector(Vector<T>&& other);
+    Vector(Vector<T>&& other) noexcept;
 
     size_t size();
 
@@ -48,7 +38,7 @@ public:
 
     void push_back(T value);
 
-    T pop_back();
+    void pop_back();
 
     template <typename... Args>
     void emplace_back(Args&&... args);
@@ -73,7 +63,7 @@ public:
 
     Vector<T>& operator=(const std::initializer_list<T>& init_list);
 
-    ~Vector();
+    ~Vector() noexcept;
 
 private:
     T* m_arr = nullptr;
@@ -98,7 +88,7 @@ Vector<T>::Vector<T>(std::size_t size) : m_capacity(size) {
         }
     }
     else {
-        m_arr = static_cast<T*>(operator new[](size * sizeof(T)));
+        m_arr = reinterpret_cast<T*>(operator new[](size * sizeof(T)));
         m_size = 0;
     }
 }
@@ -136,7 +126,7 @@ Vector<T>::Vector<T>(Vector<T>& other) : m_arr(), m_size(other.m_size), m_capaci
 }
 
 template <class T>
-Vector<T>::Vector<T>(Vector<T>&& other) : m_arr(other.m_arr), m_size(other.m_size), m_capacity(other.m_capacity) {
+Vector<T>::Vector<T>(Vector<T>&& other) noexcept : m_arr(other.m_arr), m_size(other.m_size), m_capacity(other.m_capacity) {
     other.m_arr = nullptr;
     other.m_size = 0;
     other.m_capacity = 0;
@@ -188,8 +178,8 @@ void Vector<T>::push_back(T value) {
 }
 
 template <class T>
-T Vector<T>::pop_back() {
-    return m_arr[m_size--];
+void Vector<T>::pop_back() {
+    --m_size;
 }
 
 template <class T>
@@ -260,7 +250,11 @@ bool Vector<T>::operator!=(const Vector<T>& other) const {
 template <class T>
 Vector<T>& Vector<T>::operator=(const Vector& other) {
     //T* newarr = new T[other.m_capacity];
-    T* newarr = static_cast<T*>(operator new[](other.m_capacity * sizeof(T)));
+    T* newarr = static_cast<T*>(operator new[](other.m_capacity * sizeof(T))); 
+    // placement new
+    // char* arr = new char[m_size * sizeof(T)] {};
+    // T* t = reinterpret_cast<T*>(arr);
+    // new (t + 5) MyClass{ value }; 
     m_size = other.m_size;
     m_capacity = other.m_capacity;
 
@@ -290,7 +284,7 @@ Vector<T>& Vector<T>::operator=(const std::initializer_list<T>& init_list) {
 }
 
 template <class T>
-Vector<T>::~Vector() {
+Vector<T>::~Vector() noexcept {
     delete[] m_arr;
 }
 
@@ -324,5 +318,5 @@ void Vector<T>::reallocate(size_t new_capacity) {
 
 template <class T>
 size_t Vector<T>::increaseCapacity() {
-    return m_capacity += 3;
+    return m_capacity == 0 ? m_capacity = 1 : m_capacity *= 2;
 }

@@ -206,10 +206,8 @@ namespace numbers
 	}
 
 	template<IntegralValue T>
-	RationalNumber<T>::RationalNumber(RationalNumber<T>& other) {
-		m_denominator = other.m_denominator;
-		m_numerator = other.m_numerator;
-	}
+	RationalNumber<T>::RationalNumber(RationalNumber<T>& other) 
+		: m_denominator(other.m_denominator), m_numerator(other.m_numerator) {}
 
 
 	// Plus--------------------------------------:
