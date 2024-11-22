@@ -8,6 +8,7 @@
 class Set {
 public:
     Set();
+    ~Set() noexcept;
     bool empty();
     size_t size();
 
@@ -20,10 +21,11 @@ private:
     TreeNode* m_treeRoot = nullptr;
 };
 
-struct TreeNode {
+struct Set::TreeNode {
     // Implemented as an AVL Tree
-    int value;
-    TreeNode* left = nullptr;
-    TreeNode* right = nullptr;
+    int m_value;
+    TreeNode* m_left = nullptr;
+    TreeNode* m_right = nullptr;
+    TreeNode(int value);
     //TreeNode();
 };
