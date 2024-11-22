@@ -3,6 +3,12 @@
 
 Set::Set() : m_size(0) {}
 
+Set::Set(const std::initializer_list<int>& init_list) {
+    for (const int item : init_list) {
+        insert(item);
+    }
+}
+
 Set::~Set() noexcept {
     delete m_treeRoot;
 }

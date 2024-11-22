@@ -3,6 +3,7 @@
 #include "Fixtures/CustomAsserts.h"
 #include <vector>
 #include <algorithm>
+#include <initializer_list>
 
 namespace test
 {  

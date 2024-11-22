@@ -8,6 +8,7 @@
 class Set {
 public:
     Set();
+    Set(const std::initializer_list<int>& init_list);
     ~Set() noexcept;
     bool empty();
     size_t size();
