@@ -1,7 +1,9 @@
 #include "Set.h"
 
 
-Set::Set() : m_size(0) {}
+Set::Set() : m_size(0) {
+    m_fakeEnd = new TreeNode(-1);
+}
 
 Set::Set(const Set& other) {
     m_size = other.m_size;
@@ -50,13 +52,22 @@ void Set::insert(int value) {
     TreeNode* parent = nullptr;
     bool ismin = true;
     bool ismax = true;
+    bool fakeEndReached = false;
+
     while ((*current) != nullptr) {
         if (value == (*current)->m_value) return;
         parent = *current;
         if (value > (*current)->m_value) {
             
             current = &(*current)->m_right;
+            
+            
+
             ismin = false;
+            if ((*current) == m_fakeEnd) {
+                fakeEndReached = true;
+                break;
+            }
             continue;
         }
         if (value < (*current)->m_value) {
@@ -67,7 +78,12 @@ void Set::insert(int value) {
     }
     *current = new TreeNode(value, parent);
     if (ismin) m_min = *current;
-    if (ismax) m_max = *current;
+    
+    if (ismax || fakeEndReached) {
+        m_max = *current;
+        (*current)->m_right = m_fakeEnd;
+    }
+    
     m_size++;
     return;
 }
@@ -77,6 +93,7 @@ void Set::erase(int value) {
 
     // look for the node
     while (true) {
+
         if (value == (*current)->m_value) break;
         if (value > (*current)->m_value) {
             current = &(*current)->m_right;
@@ -86,13 +103,17 @@ void Set::erase(int value) {
             current = &(*current)->m_left;
             continue;
         }
-        if (!(*current)) return;
+        
+        if (!(*current) || (*current) == m_fakeEnd) return;
     }
-    bool hasRight = (*current)->m_right != nullptr;
+    bool hasRight = ((*current)->m_right != nullptr) && ((*current)->m_right != m_fakeEnd);
     bool hasLeft = (*current)->m_left != nullptr;
 
     if (!hasLeft && hasRight) { // has only right
         TreeNode* tmp = (*current)->m_right;
+        if ((*current) == m_min) {
+            m_min = (*current)->m_right;
+        }
         (*current)->m_right = nullptr;
         delete (*current);
         (*current) = tmp;
@@ -100,6 +121,18 @@ void Set::erase(int value) {
     else if (hasLeft && !hasRight) { // has only left
         TreeNode* tmp = (*current)->m_left;
         (*current)->m_left = nullptr;
+
+        if ((*current)->m_right == m_fakeEnd) {
+            (*current)->m_right = nullptr;
+            TreeNode* tmpcurr = tmp;
+            while (tmpcurr->m_right != nullptr)
+            {
+                tmpcurr = tmpcurr->m_right;
+            }
+            m_max = tmpcurr;
+            tmpcurr->m_right = m_fakeEnd;
+        }
+
         delete (*current);
         (*current) = tmp;
     }
@@ -116,7 +149,12 @@ void Set::erase(int value) {
         (*curr) = tmp;
     }
     else { // has no children
+        if ((*current) == m_max) {
+            (*current)->m_right = nullptr;
+            m_max = (*current)->m_parent;
+        }
         delete (*current);
+        m_max->m_right = m_fakeEnd;
     }
     m_size--;
 }
@@ -145,10 +183,20 @@ Set::iterator Set::begin() const {
 }
 
 Set::iterator Set::end() const {
-    return iterator(m_max);
+    return iterator(m_fakeEnd);
     //return iterator(nullptr);
 }
 
+Set::iterator Set::find(int value) {
+    TreeNode* current = m_treeRoot;
+    while (current != nullptr) {
+        if (current->m_value == value) {
+            return iterator(current);
+        }
+        current = value > current->m_value ? current->m_right : current->m_left;
+    }
+    return iterator(m_fakeEnd);
+}
 
 // Private methods
 ////////////////////////////////////////////////////////////////////////////
@@ -164,13 +212,15 @@ bool Set::deepCheckEqual(const Set& other) const {
     iterator it = begin();
     iterator itOther = other.begin();
 
-    while ((it != end()) && (itOther != other.end())) {
+    iterator thisEnd = iterator(m_max);
+    iterator otherEnd = iterator(other.m_max);
+    while ((it != thisEnd) && (itOther != otherEnd)) {
         if (*it != *itOther) return false;
         ++it;
         ++itOther;
     }
 
-    if (it == end() && itOther == other.end()) return true;
+    if (it == thisEnd && itOther == otherEnd) return true;
     return false;
 }
 
@@ -227,15 +277,6 @@ void Set::iterator::goNext() {
 
         return;
     }
-
-    //if (m_current->m_parent != nullptr) {
-    //    TreeNode* prev = nullptr;
-    //    do {
-    //        prev = m_current;
-    //        m_current = m_current->m_parent;
-    //    } while (m_current->m_right == prev);
-    //}
-    //return;
 
     while (m_current->m_parent != nullptr && m_current == m_current->m_parent->m_right) {
         m_current = m_current->m_parent;

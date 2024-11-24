@@ -24,6 +24,7 @@ public:
 
     class iterator;
 
+    iterator find(int value);
     iterator begin() const;
     iterator end() const;
 
@@ -31,6 +32,8 @@ private:
     size_t m_size;
     struct TreeNode;
     TreeNode* m_treeRoot = nullptr;
+    TreeNode* m_fakeEnd = nullptr;
+
     TreeNode* m_min = nullptr;
     TreeNode* m_max = nullptr;
 
