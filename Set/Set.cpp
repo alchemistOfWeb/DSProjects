@@ -146,6 +146,7 @@ Set::iterator Set::begin() const {
 
 Set::iterator Set::end() const {
     return iterator(m_max);
+    //return iterator(nullptr);
 }
 
 
@@ -207,11 +208,12 @@ bool Set::iterator::operator!=(const iterator& other) const {
     return m_current != other.m_current;
 }
 
-// Iterator helper:
-
 void Set::iterator::goNext() {
     // In the start of each iteration we are already on the leftest node
     // looked position so we can go either right or up
+    if (m_current == nullptr) {
+        return;
+    }
     
     if (m_current->m_right != nullptr) {
         m_current = m_current->m_right;
@@ -226,13 +228,18 @@ void Set::iterator::goNext() {
         return;
     }
 
-    if (m_current->m_parent != nullptr) {
-        TreeNode* prev = nullptr;
-        do {
-            prev = m_current;
-            m_current = m_current->m_parent;
-        } while (m_current->m_right == prev);
+    //if (m_current->m_parent != nullptr) {
+    //    TreeNode* prev = nullptr;
+    //    do {
+    //        prev = m_current;
+    //        m_current = m_current->m_parent;
+    //    } while (m_current->m_right == prev);
+    //}
+    //return;
+
+    while (m_current->m_parent != nullptr && m_current == m_current->m_parent->m_right) {
+        m_current = m_current->m_parent;
     }
 
-    return;
+    m_current = m_current->m_parent;
 }

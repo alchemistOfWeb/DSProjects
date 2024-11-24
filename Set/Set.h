@@ -50,6 +50,12 @@ struct Set::TreeNode {
 
 class Set::iterator {
 public:
+    //using iterator_category = std::forward_iterator_tag;
+    using value_type = const int;
+    //using pointer = const int*;
+    //using reference = const int&;
+    using difference_type = std::ptrdiff_t;
+
     iterator(TreeNode* node = nullptr);
     const int& operator*();
     iterator& operator++();
