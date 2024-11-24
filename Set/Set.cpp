@@ -5,7 +5,7 @@ Set::Set() : m_size(0) {}
 
 Set::Set(const Set& other) {
     m_size = other.m_size;
-    m_treeRoot = other.m_treeRoot;
+    m_treeRoot = deepCopy(other.m_treeRoot);
 }
 
 Set::Set(const std::initializer_list<int>& init_list) {
@@ -130,6 +130,16 @@ Set::iterator Set::end() {
     return iterator(m_max);
 }
 
+
+// Private methods
+////////////////////////////////////////////////////////////////////////////
+
+Set::TreeNode* Set::deepCopy(Set::TreeNode* node) {
+    TreeNode* newnode =  new TreeNode(node->m_value, node->m_parent);
+    newnode->m_left = node->m_left != nullptr ? deepCopy(node->m_left) : nullptr;
+    newnode->m_right = node->m_right != nullptr ? deepCopy(node->m_right) : nullptr;
+    return newnode;
+}
 
 // Tree 
 ////////////////////////////////////////////////////////////////////////////

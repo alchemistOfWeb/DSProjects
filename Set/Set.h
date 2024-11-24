@@ -29,6 +29,8 @@ private:
     TreeNode* m_treeRoot = nullptr;
     TreeNode* m_min = nullptr;
     TreeNode* m_max = nullptr;
+
+    TreeNode* deepCopy(TreeNode* node);
 };
 
 struct Set::TreeNode {
