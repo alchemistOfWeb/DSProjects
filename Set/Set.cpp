@@ -3,6 +3,11 @@
 
 Set::Set() : m_size(0) {}
 
+Set::Set(const Set& other) {
+    m_size = other.m_size;
+    m_treeRoot = other.m_treeRoot;
+}
+
 Set::Set(const std::initializer_list<int>& init_list) {
     for (const int item : init_list) {
         insert(item);
@@ -40,18 +45,27 @@ bool Set::contains(int value) {
 
 void Set::insert(int value) {
     TreeNode** current = &m_treeRoot;
+    TreeNode* parent = nullptr;
+    bool ismin = true;
+    bool ismax = true;
     while ((*current) != nullptr) {
         if (value == (*current)->m_value) return;
+        parent = *current;
         if (value > (*current)->m_value) {
+            
             current = &(*current)->m_right;
+            ismin = false;
             continue;
         }
         if (value < (*current)->m_value) {
             current = &(*current)->m_left;
+            ismax = false;
             continue;
         }
     }
-    *current = new TreeNode(value); 
+    *current = new TreeNode(value, parent);
+    if (ismin) m_min = *current;
+    if (ismax) m_max = *current;
     m_size++;
     return;
 }
@@ -105,7 +119,77 @@ void Set::erase(int value) {
     m_size--;
 }
 
+
+// Iteration methods
+////////////////////////////////////////////////////////////////////////////
+Set::iterator Set::begin() {
+    return iterator(m_min);
+}
+
+Set::iterator Set::end() {
+    return iterator(m_max);
+}
+
+
 // Tree 
 ////////////////////////////////////////////////////////////////////////////
 
-Set::TreeNode::TreeNode(int value) : m_value(value) {}
+Set::TreeNode::TreeNode(int value, Set::TreeNode* parent) : m_value(value), m_parent(parent) {}
+
+// Iterator
+////////////////////////////////////////////////////////////////////////////
+Set::iterator::iterator(Set::TreeNode* node) : m_current(node) {}
+
+const int& Set::iterator::operator*() {
+    return m_current->m_value;
+}
+
+Set::iterator Set::iterator::operator++(int) {
+    // post inc operator
+    Set::iterator tmp = *this;
+    this->goNext();
+    return tmp;
+}
+
+Set::iterator& Set::iterator::operator++() {
+    // pre inc operator
+    this->goNext();
+    return *this;
+}
+
+bool Set::iterator::operator==(const iterator& other) const {
+    return m_current == other.m_current;
+}
+
+bool Set::iterator::operator!=(const iterator& other) const {
+    return m_current != other.m_current;
+}
+
+// Iterator helper:
+
+void Set::iterator::goNext() {
+    // In the start of each iteration we are already on the leftest node
+    // looked position so we can go either right or up
+    if (m_current->m_right != nullptr) {
+        m_current = m_current->m_right;
+
+        if (m_current->m_left != nullptr) {
+            // go only left... untill we reach the leftest node
+            m_current = m_current->m_left;
+            while (m_current->m_left != nullptr)
+                m_current = m_current->m_left;
+        } // else: there are no lefter elements but all righter elements have greater values
+
+        return;
+    }
+
+    if (m_current->m_parent != nullptr) {
+        TreeNode* prev = nullptr;
+        do {
+            prev = m_current;
+            m_current = m_current->m_parent;
+        } while (m_current->m_right == prev);
+    }
+
+    return;
+}

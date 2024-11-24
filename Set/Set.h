@@ -8,18 +8,27 @@
 class Set {
 public:
     Set();
+    Set(const Set& other);
     Set(const std::initializer_list<int>& init_list);
     ~Set() noexcept;
+
     bool empty();
     size_t size();
-
     bool contains(int value);
     void insert(int value);
     void erase(int value);
+
+    class iterator;
+
+    iterator begin();
+    iterator end();
+
 private:
     size_t m_size;
     struct TreeNode;
     TreeNode* m_treeRoot = nullptr;
+    TreeNode* m_min = nullptr;
+    TreeNode* m_max = nullptr;
 };
 
 struct Set::TreeNode {
@@ -27,6 +36,23 @@ struct Set::TreeNode {
     int m_value;
     TreeNode* m_left = nullptr;
     TreeNode* m_right = nullptr;
-    TreeNode(int value);
+    TreeNode* m_parent = nullptr; // TODO: use it in all addings of a node
+    TreeNode(int value, TreeNode* parent=nullptr);
     //TreeNode();
+};
+
+class Set::iterator {
+public:
+    iterator(TreeNode* node = nullptr);
+    const int& operator*();
+    iterator& operator++();
+    iterator operator++(int);
+    iterator& operator--();
+    iterator operator--(int);
+    bool operator==(const iterator& other) const;
+    bool operator!=(const iterator& other) const;
+private:
+    TreeNode* m_current;
+
+    void goNext();
 };
