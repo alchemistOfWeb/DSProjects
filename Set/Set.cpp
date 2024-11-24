@@ -187,7 +187,7 @@ Set::iterator Set::end() const {
     //return iterator(nullptr);
 }
 
-Set::iterator Set::find(int value) {
+Set::iterator Set::find(int value) const {
     TreeNode* current = m_treeRoot;
     while (current != nullptr) {
         if (current->m_value == value) {
@@ -196,6 +196,40 @@ Set::iterator Set::find(int value) {
         current = value > current->m_value ? current->m_right : current->m_left;
     }
     return iterator(m_fakeEnd);
+}
+
+Set::iterator Set::upper_bound(int value) const {
+    TreeNode* current = m_treeRoot;
+    TreeNode* result = m_fakeEnd;
+
+    while (current != nullptr) {
+        if (current->m_value > value) {
+            result = current;
+            current = current->m_left;
+        }
+        else {
+            current = current->m_right; 
+        }
+    }
+
+    return iterator(result);
+}
+
+Set::iterator Set::lower_bound(int value) const {
+    TreeNode* current = m_treeRoot;
+    TreeNode* result = m_fakeEnd;
+
+    while (current != nullptr) {
+        if (current->m_value >= value) {
+            result = current;
+            current = current->m_left;
+        }
+        else {
+            current = current->m_right;
+        }
+    }
+
+    return iterator(result);
 }
 
 // Private methods

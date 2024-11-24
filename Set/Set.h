@@ -17,6 +17,8 @@ public:
     bool contains(int value);
     void insert(int value);
     void erase(int value);
+    
+
 
     Set& operator=(const Set& other);
     bool operator==(const Set& other) const;
@@ -24,9 +26,11 @@ public:
 
     class iterator;
 
-    iterator find(int value);
+    iterator find(int value) const;
     iterator begin() const;
     iterator end() const;
+    iterator upper_bound(int value) const;
+    iterator lower_bound(int value) const;
 
 private:
     size_t m_size;
