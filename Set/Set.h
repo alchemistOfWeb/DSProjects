@@ -18,10 +18,14 @@ public:
     void insert(int value);
     void erase(int value);
 
+    Set& operator=(const Set& other);
+    bool operator==(const Set& other) const;
+    bool operator!=(const Set& other) const;
+
     class iterator;
 
-    iterator begin();
-    iterator end();
+    iterator begin() const;
+    iterator end() const;
 
 private:
     size_t m_size;
@@ -31,6 +35,7 @@ private:
     TreeNode* m_max = nullptr;
 
     TreeNode* deepCopy(TreeNode* node);
+    bool deepCheckEqual(const Set& other) const;
 };
 
 struct Set::TreeNode {

@@ -5,6 +5,8 @@ Set::Set() : m_size(0) {}
 
 Set::Set(const Set& other) {
     m_size = other.m_size;
+    m_max = other.m_max;
+    m_min = other.m_min;
     m_treeRoot = deepCopy(other.m_treeRoot);
 }
 
@@ -120,13 +122,29 @@ void Set::erase(int value) {
 }
 
 
+Set& Set::operator=(const Set& other) {
+    m_size = other.m_size;
+    m_max = other.m_max;
+    m_min = other.m_min;
+    m_treeRoot = deepCopy(other.m_treeRoot);
+    return *this;
+}
+
+bool Set::operator==(const Set& other) const {
+    return deepCheckEqual(other);
+}
+
+bool Set::operator!=(const Set& other) const {
+    return !deepCheckEqual(other);
+}
+
 // Iteration methods
 ////////////////////////////////////////////////////////////////////////////
-Set::iterator Set::begin() {
+Set::iterator Set::begin() const {
     return iterator(m_min);
 }
 
-Set::iterator Set::end() {
+Set::iterator Set::end() const {
     return iterator(m_max);
 }
 
@@ -139,6 +157,20 @@ Set::TreeNode* Set::deepCopy(Set::TreeNode* node) {
     newnode->m_left = node->m_left != nullptr ? deepCopy(node->m_left) : nullptr;
     newnode->m_right = node->m_right != nullptr ? deepCopy(node->m_right) : nullptr;
     return newnode;
+}
+
+bool Set::deepCheckEqual(const Set& other) const {
+    iterator it = begin();
+    iterator itOther = other.begin();
+
+    while ((it != end()) && (itOther != other.end())) {
+        if (*it != *itOther) return false;
+        ++it;
+        ++itOther;
+    }
+
+    if (it == end() && itOther == other.end()) return true;
+    return false;
 }
 
 // Tree 
@@ -180,6 +212,7 @@ bool Set::iterator::operator!=(const iterator& other) const {
 void Set::iterator::goNext() {
     // In the start of each iteration we are already on the leftest node
     // looked position so we can go either right or up
+    
     if (m_current->m_right != nullptr) {
         m_current = m_current->m_right;
 
