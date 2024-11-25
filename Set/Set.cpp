@@ -58,11 +58,7 @@ void Set::insert(int value) {
         if (value == (*current)->m_value) return;
         parent = *current;
         if (value > (*current)->m_value) {
-            
             current = &(*current)->m_right;
-            
-            
-
             ismin = false;
             if ((*current) == m_fakeEnd) {
                 fakeEndReached = true;
@@ -106,6 +102,7 @@ void Set::erase(int value) {
         
         if (!(*current) || (*current) == m_fakeEnd) return;
     }
+    
     bool hasRight = ((*current)->m_right != nullptr) && ((*current)->m_right != m_fakeEnd);
     bool hasLeft = (*current)->m_left != nullptr;
 
@@ -232,8 +229,145 @@ Set::iterator Set::lower_bound(int value) const {
     return iterator(result);
 }
 
+void Set::erase(iterator pos) {
+    if (pos == end()) return;
+
+    TreeNode** current = &(pos.m_current);
+    
+    if (!(*current) || (*current) == m_fakeEnd) return;
+    if ((*current)->m_parent) {
+        if ((*current)->m_parent->m_right == (*current)) {
+            current = &((*current)->m_parent->m_right);
+        }
+        else {
+            current = &((*current)->m_parent->m_left);
+        }
+    }
+
+    bool hasRight = ((*current)->m_right != nullptr) && ((*current)->m_right != m_fakeEnd);
+    bool hasLeft = (*current)->m_left != nullptr;
+
+    if (!hasLeft && hasRight) { // has only right
+        TreeNode* tmp = (*current)->m_right;
+        tmp->m_parent = (*current)->m_parent;
+        if ((*current) == m_min) {
+            // TODO: make loop for searching min element from m_right 
+            TreeNode** curr = &(*current)->m_right;
+            while ((*curr)->m_left != nullptr) {
+                curr = &(*curr)->m_left;
+            }
+            m_min = (*curr);
+            //m_min = (*current)->m_right;
+        }
+        (*current)->m_right = nullptr;
+        (*current)->m_parent = nullptr;
+        if (*current != m_treeRoot) {
+            delete (*current);
+            (*current) = tmp;
+        }
+        else {
+            delete m_treeRoot;
+            m_treeRoot = tmp;
+        }
+    }
+    else if (hasLeft && !hasRight) { // has only left
+        TreeNode* tmp = (*current)->m_left;
+        tmp->m_parent = (*current)->m_parent;
+        (*current)->m_left = nullptr;
+        (*current)->m_parent = nullptr;
+
+        if ((*current)->m_right == m_fakeEnd) {
+            (*current)->m_right = nullptr;
+            TreeNode* tmpcurr = tmp;
+            while (tmpcurr->m_right != nullptr) {
+                tmpcurr = tmpcurr->m_right;
+            }
+            m_max = tmpcurr;
+            tmpcurr->m_right = m_fakeEnd;
+            //m_fakeEnd->m_parent = tmpcurr; // does it really need ????
+        }
+
+        delete (*current);
+        (*current) = tmp;
+    }
+    else if (hasLeft && hasRight) { // has both
+        // go to right then left left left...
+        TreeNode** curr = &(*current)->m_right;
+        while ((*curr)->m_left != nullptr) {
+            curr = &(*curr)->m_left;
+        }
+        (*current)->m_value = (*curr)->m_value;
+        TreeNode* tmp = (*curr)->m_right;
+        if (tmp != nullptr) {
+            tmp->m_parent = (*curr)->m_parent;
+        }
+        (*curr)->m_right = nullptr;
+        (*curr)->m_parent = nullptr;
+        delete (*curr);
+        (*curr) = tmp;
+    }
+    else { // has no children
+        if (m_treeRoot == (*current)) {
+            m_treeRoot = m_min = m_fakeEnd;
+        }
+        if ((*current) == m_min) {
+            m_min = (*current)->m_parent;
+        }
+        if ((*current) == m_max) {
+            (*current)->m_right = nullptr;
+            m_max = (*current)->m_parent;
+            if (m_max != nullptr) {
+                m_max->m_right = m_fakeEnd;
+            }
+        }
+        if ((*current)->m_parent) {
+            if ((*current)->m_parent->m_right == (*current)) {
+                (*current)->m_parent->m_right = nullptr;
+            }
+            else {
+                (*current)->m_parent->m_left = nullptr;
+            }
+        }
+        delete (*current);
+    }
+    m_size--;
+}
+
 // Private methods
 ////////////////////////////////////////////////////////////////////////////
+void Set::replaceNodeInParent(TreeNode* node, TreeNode* newNode) {
+    if (node->m_parent) {
+        if (node == node->m_parent->m_left) {
+            node->m_parent->m_left = newNode;
+        }
+        else if (node == node->m_parent->m_right) {
+            node->m_parent->m_right = newNode;
+        }
+    }
+    else {
+        m_treeRoot = newNode; 
+    }
+
+    if (newNode) {
+        newNode->m_parent = node->m_parent;
+    }
+}
+
+Set::TreeNode* Set::findMin(TreeNode* node) const {
+    while (node && node->m_left != nullptr) {
+        node = node->m_left;
+    }
+    return node;
+}
+
+Set::TreeNode* Set::findMax(TreeNode* node) const {
+    while (node && node->m_right != m_fakeEnd) {
+        node = node->m_right;
+    }
+    return node;
+}
+
+
 
 Set::TreeNode* Set::deepCopy(Set::TreeNode* node) {
     TreeNode* newnode =  new TreeNode(node->m_value, node->m_parent);

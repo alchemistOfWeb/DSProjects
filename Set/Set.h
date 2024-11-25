@@ -31,6 +31,7 @@ public:
     iterator end() const;
     iterator upper_bound(int value) const;
     iterator lower_bound(int value) const;
+    void erase(iterator pos);
 
 private:
     size_t m_size;
@@ -43,6 +44,9 @@ private:
 
     TreeNode* deepCopy(TreeNode* node);
     bool deepCheckEqual(const Set& other) const;
+    void replaceNodeInParent(TreeNode* node, TreeNode* newNode);
+    TreeNode* findMin(TreeNode* node) const;
+    TreeNode* findMax(TreeNode* node) const;
 };
 
 struct Set::TreeNode {
@@ -56,6 +60,7 @@ struct Set::TreeNode {
 };
 
 class Set::iterator {
+    friend class Set;
 public:
     //using iterator_category = std::forward_iterator_tag;
     using value_type = const int;
