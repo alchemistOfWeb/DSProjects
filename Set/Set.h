@@ -47,6 +47,7 @@ private:
     void replaceNodeInParent(TreeNode* node, TreeNode* newNode);
     TreeNode* findMin(TreeNode* node) const;
     TreeNode* findMax(TreeNode* node) const;
+    void commonErase(TreeNode** current);
 };
 
 struct Set::TreeNode {
