@@ -2,7 +2,7 @@
 
 
 Set::Set() : m_size(0) {
-    m_fakeEnd = new TreeNode(-1);
+    createFakeEnd();
 }
 
 Set::Set(const Set& other) {
@@ -13,7 +13,7 @@ Set::Set(const Set& other) {
 }
 
 Set::Set(const std::initializer_list<int>& init_list) {
-    m_fakeEnd = new TreeNode(-1);
+    createFakeEnd();
     for (const int item : init_list) {
         insert(item);
     } // m_max replacement issue
@@ -74,6 +74,7 @@ void Set::insert(int value) {
         }
     }
     *current = new TreeNode(value, parent);
+
     if (ismin) m_min = *current;
     
     if (ismax || fakeEndReached) {
@@ -82,7 +83,87 @@ void Set::insert(int value) {
     }
     
     m_size++;
+
+    // balanceSubtree(*current);
+    // TODO; after each insert go up to the root of the tree checking balance factor;
+    // if balance of left 
+    TreeNode* currRoot = parent;
+    while (currRoot) {
+        int leftHeight = height(currRoot->m_left);
+        int rightHeight = height(currRoot->m_right);
+
+        if (leftHeight - rightHeight >= 2) {
+            // do right turn
+            TreeNode* heir = currRoot->m_left;
+            if (height(heir->m_right) > height(heir->m_left)) {
+                leftTurn(heir);
+                heir->m_parent->m_height++;
+            }
+            rightTurn(currRoot);
+            break;
+        }
+        else if (rightHeight - leftHeight >= 2) {
+            // do left turn
+            TreeNode* heir = currRoot->m_right;
+            if (height(heir->m_left) > height(heir->m_right)) {
+                rightTurn(heir);
+                heir->m_parent->m_height++;
+            }
+            leftTurn(currRoot);
+
+            break;
+        }
+        else {
+            currRoot->m_height = std::max(leftHeight, rightHeight) + 1;
+        }
+        currRoot = currRoot->m_parent;
+    }
     return;
+}
+
+int Set::height(Set::TreeNode* node) {
+    return node != nullptr ? node->m_height : 0;
+}
+
+void Set::leftTurn(Set::TreeNode* currRoot) {
+    TreeNode* heir = currRoot->m_right;
+    if (!heir->m_left) currRoot->m_height--;
+    currRoot->m_right = heir->m_left;
+    TreeNode* tmpParent = currRoot->m_parent;
+    
+    // if we dont deal with m_treeRoot then tmpParent cannot be nullptr
+    if (currRoot == m_treeRoot) {
+        m_treeRoot = heir;
+    }
+    else {
+        (currRoot == tmpParent->m_right ? tmpParent->m_right : tmpParent->m_left) = heir;
+    }
+
+    currRoot->m_parent = heir;
+    heir->m_parent = tmpParent;
+    heir->m_left = currRoot;
+
+    currRoot = heir;
+}
+
+void Set::rightTurn(Set::TreeNode* currRoot) {
+    TreeNode* heir = currRoot->m_left;
+    if (!heir->m_right) currRoot->m_height--;
+    currRoot->m_left = heir->m_right;
+    TreeNode* tmpParent = currRoot->m_parent;
+    
+    // if we dont deal with m_treeRoot then tmpParent cannot be nullptr
+    if (currRoot == m_treeRoot) {
+        m_treeRoot = heir;
+    }
+    else {
+        (currRoot == tmpParent->m_right ? tmpParent->m_right : tmpParent->m_left) = heir;
+    }
+
+    currRoot->m_parent = heir;
+    heir->m_parent = tmpParent;
+    heir->m_right = currRoot;
+    currRoot = heir;
 }
 
 void Set::erase(int value) {
@@ -374,37 +455,8 @@ void Set::commonErase(TreeNode** current) {
 
 // Private methods
 ////////////////////////////////////////////////////////////////////////////
-void Set::replaceNodeInParent(TreeNode* node, TreeNode* newNode) {
-    // TODO: update this according to code in erase method
-    if (node->m_parent) {
-        if (node == node->m_parent->m_left) {
-            node->m_parent->m_left = newNode;
-        }
-        else if (node == node->m_parent->m_right) {
-            node->m_parent->m_right = newNode;
-        }
-    }
-    else {
-        m_treeRoot = newNode; 
-    }
-
-    if (newNode) {
-        newNode->m_parent = node->m_parent;
-    }
-}
-
-Set::TreeNode* Set::findMin(TreeNode* node) const {
-    while (node && node->m_left != nullptr) {
-        node = node->m_left;
-    }
-    return node;
-}
-
-Set::TreeNode* Set::findMax(TreeNode* node) const {
-    while (node && node->m_right != m_fakeEnd) {
-        node = node->m_right;
-    }
-    return node;
+void Set::createFakeEnd() {
+    m_fakeEnd = new TreeNode(-1, nullptr, 0);
 }
 
 Set::TreeNode* Set::deepCopy(Set::TreeNode* node) {
@@ -433,7 +485,8 @@ bool Set::deepCheckEqual(const Set& other) const {
 // Tree 
 ////////////////////////////////////////////////////////////////////////////
 
-Set::TreeNode::TreeNode(int value, Set::TreeNode* parent) : m_value(value), m_parent(parent) {}
+Set::TreeNode::TreeNode(int value, Set::TreeNode* parent, int height) 
+    : m_value(value), m_parent(parent), m_height(height) {}
 
 // Iterator
 ////////////////////////////////////////////////////////////////////////////

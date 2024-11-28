@@ -17,8 +17,6 @@ public:
     bool contains(int value);
     void insert(int value);
     void erase(int value);
-    
-
 
     Set& operator=(const Set& other);
     bool operator==(const Set& other) const;
@@ -42,22 +40,24 @@ private:
     TreeNode* m_min = nullptr;
     TreeNode* m_max = nullptr;
 
+    void createFakeEnd();
     TreeNode* deepCopy(TreeNode* node);
     bool deepCheckEqual(const Set& other) const;
-    void replaceNodeInParent(TreeNode* node, TreeNode* newNode);
-    TreeNode* findMin(TreeNode* node) const;
-    TreeNode* findMax(TreeNode* node) const;
     void commonErase(TreeNode** current);
+    int height(TreeNode* node);
+    void leftTurn(TreeNode* currRoot);
+    void rightTurn(TreeNode* currRoot);
 };
+
 
 struct Set::TreeNode {
     // Implemented as an AVL Tree
     int m_value;
+    int m_height=1;
     TreeNode* m_left = nullptr;
     TreeNode* m_right = nullptr;
-    TreeNode* m_parent = nullptr; // TODO: use it in all addings of a node
-    TreeNode(int value, TreeNode* parent=nullptr);
-    //TreeNode();
+    TreeNode* m_parent = nullptr;
+    TreeNode(int value, TreeNode* parent=nullptr, int height=1);
 };
 
 class Set::iterator {
