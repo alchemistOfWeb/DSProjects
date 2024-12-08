@@ -39,3 +39,17 @@ void makeHeap(RandomIt begin, RandomIt end) {
     }
 }
 
+template <class RandomIt>
+void popHeap(RandomIt begin, RandomIt end) {
+    size_t size = std::distance(begin, end);
+    if (size <= 1) return;
+    std::iter_swap(begin, end - 1);
+    heapify(begin, 0, size - 1);
+}
+//
+//template <class RandomIt>
+//void pushHeap(RandomIt begin, RandomIt end) {
+//    size_t size = std::distance(begin, end);
+//    if (size <= 1) return;
+//
+//}
