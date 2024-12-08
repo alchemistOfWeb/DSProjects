@@ -3,7 +3,7 @@
 #include "Tests/2PopHeapTest.h"
 #include "Tests/3PushHeapTest.h"
 #include "Tests/4ComparatorTest.h"
-//#include "Tests/5ComparisonCounterTest.h"
+#include "Tests/5ComparisonCounterTest.h"
 
 int main() 
 {
